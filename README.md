@@ -1,8 +1,28 @@
 # RTALogger
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/RTALogger`. To experiment with that code, run `bin/console` for an interactive prompt.
+RTA Log Manager has been designed and implemented to provide standard logging API for developers.
+This prevents chaos in log data format. 
+Also provide multiple extendable log repositories including wrapping existing loggers, like 'Fluentd' or implement completely new custom logger. 
+All log manager's main features are configable through a json config file.
 
-TODO: Delete this and the text above, and describe your gem
+Main purposes of developing this gem are:
+- Creating easy to use logger interface.
+- Apply some rules and restrictions about log structure and data format, which prevents chaos in application log information.
+- No interrupt or wait time for log consumer modules.
+- Utilize multiple log repositories at the same time in background (Console, File, UDP, FluentD, etc.) 
+- Make it possible to implement customized log repositories.
+
+Main Features:
+- Creating multiple log manager instances with different configuration is possible entire application.
+- Each log manager instance could be configured via a json file.
+- Each log manager instance could be config to use multiple log repositories such as Console, File, UDP, Fluentd.
+- Runtime configurations could be applied through log manager APIs.
+- By using multi threading techniques and also buffering techniques, 
+  all logging process will handled in seperated thread.
+  So the log consumer modules should not be wait for log manager to finish the logging task.
+- Multiple standard log severity levels are available through topic APIs (debug, info, warning, error, fatal, unknown)
+- Main features could be set and manipulate through json configuration file.
+- And at the end, it is easy to use for ruby backend developers. 
 
 ## Installation
 
@@ -20,45 +40,82 @@ Or install it yourself as:
 
     $ gem install RTALogger
 
+To add gem to your rails application:
+   
+     $ bundle add RTALogger
+     
 ## Usage
+#### RTA Log Data Structure
+To use log manager APIs, first step is to have a quick review on Log Data Structure
+- Application: The root of each log data record is Application, which specify the log data owner application.
+- Topic: By adding multiple topics to log manager you can categorize log data in logical topics.
+- Context: Under each topic, one or multiple contexts (in one level) could be defined. 
+- As an instance the Application could by 'MyEShopApp', one of Topics could be 'Authentication' and 
+  Contexts could be 'uer_name' which attend in application authorization process.
+- The next step is log severity level, which determines that the log record severity (debug, information, warning, error, fatal, unknown)
+- At last the final element is log message, which contains log message data.
 
-require_relative 'log_factory_manager'
-require_relative 'log_factory_repository'
+### Which Log Severity Levels to use
+- DEBUG = 0 : Low-level information, mostly for developers.
+- INFO = 1 : Generic (useful) information about system operation.
+- WARN = 2 : A warning, which it does NOT cause crashing the process.
+- ERROR = 3 : A handleable error condition.
+- FATAL = 4 : An un-handleable error that results in a program crash.
+- UNKNOWN = 5 : An unknown message that should always be logged.
+    
+### Time for coding
+- create log manager instance:
+```ruby
+    # add required files
+    require 'log_factory_manager'
 
-controller_name = 'test_controller'
-userID = 5
+    # create log manager instance using LogFactory
+    log_manager = RTALogger::LogFactory.log_manager_instance
+```
+- Apply configuration using json config file
+```ruby
+    # the parameter is the json config file
+    log_manager.config_use_json_file('rta_logger_config.json')
+```
+- Add new topic to log manager and get the topic instance
+```ruby
+    # the parameter is the topic name
+    # if add_topic API called multiple times with same parameter,
+    # only one instance will be created for that topic 
+    topic = log_manager.add_topic('Authentication')
+```
+- Finally add log message using topic instance
+```ruby
+    # Assume user 'Tom' is trying to authenticate we will use user_name as log Context_id
+    user_name = 'Tom'
+    topic = log_manager.add_topic('Authentication')
+    topic.debug(user_name, 'use_id is nil for user:', user_name)
+    topic.info(user_name, 'User ', user_name , ' is trying to login.')
+    topic.warning(user_name, 'Authentication failed for user ', user_name)
+    topic.error(user_name, 'Error connecting to data base for user ', user_name)
+    topic.fatal(user_name, 'Authentication service has been stopped working')
+    topic.unknown(user_name, 'An unknown error occured during authentication. user name:', user_name)
+```
+the result will be:
+```
+    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":0,"message":"user_id is nil for user: Tom"}
+    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":1,"message":"User Tom is trying to login"}
+    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":2,"message":"Authentication failed for user Tom"}
+    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":3,"message":"Error connecting to data base for user Tom"}
+    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":4,"message":"Authentication service has been stopped working"}
+    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":5,"message":"An unknown error occured during authentication. user name: Tom"}
+```
+- Some useful features
+```ruby
+    # change log manager app name at run time
+    log_manager.app_name = 'myTestApp'
 
-# create log manager instance
-# this could be a global variable declared in application level
-log_manager = RTALogger::LogFactory.log_manager_instance
+    # update specific topic log level if necessary
+    log_manager.update_topic_level(controller_name, RTALogger::LogSeverity::INFO)
 
-# set log manage application name (hard code)
-log_manager.app_name = 'myTestApp'
-
-# load log manager configuration from a json config file
-log_manager.config_use_json_file('rta_logger_config.json')
-
-# add log repository to log manager
-#log_manager.propagator.add_log_repository(RTALogger::LogFactory.new_log_repository_console)
-
-# add new topic to log manager
-# use this api to get a new log topic instance
-# this api could be called in entry point of each service or class initialize method
-topic = log_manager.add_topic(controller_name)
-
-# add log information to log topic
-topic.debug(userID, 'Controller Name=', controller_name, 'debug')
-topic.info(userID, 'Controller Name=', controller_name, 'information')
-topic.warning(userID, 'Controller Name=', controller_name, 'warning')
-topic.error(userID, 'Controller Name=', controller_name, 'error')
-topic.fatal(userID, 'Controller Name=', controller_name, 'fatal')
-topic.unknown(userID, 'Controller Name=', controller_name, 'unknown')
-
-# update specific topic log level if necessary
-# log_manager.update_topic_level(controller_name, RTALogger::LogSeverity::INFO)
-
-# update all topics log level if necessary
-# log_manager.update_all_topics_log_level(RTALogger::LogSeverity::INFO)
+    # update all topics log level if necessary
+    log_manager.update_all_topics_log_level(RTALogger::LogSeverity::INFO)
+```
 
 ## Development
 
@@ -68,7 +125,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/RTALogger.
+Bug reports and pull requests are welcome on GitHub at https://github.com/BBahrainy/RTALogger.
 
 
 ## License
