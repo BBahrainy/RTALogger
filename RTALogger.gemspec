@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
 
-  spec.metadata["allowed_push_host"] = "https://github.com/BBahrainy/RTALogger.git"
+  spec.metadata["allowed_push_host"] = "https://www.rubygems.org"
 
   spec.metadata["homepage_uri"] = "https://github.com/BBahrainy/RTALogger.git"
   spec.metadata["source_code_uri"] = "https://github.com/BBahrainy/RTALogger.git"
