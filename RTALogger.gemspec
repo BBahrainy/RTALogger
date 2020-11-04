@@ -6,6 +6,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Babak Bahreini, RTA Backend Team"]
   spec.email         = ["b.bahreini@roundtableapps.com"]
 
+
   spec.summary       = %q{An easy to use, easy to extend log manager to prepare standard log API for developers }
   spec.description   = %q{RTA Log Manager has been designed and implemented to provide standard logging API for developers.This prevents chaos in log data format. Also provide multiple extendable log repositories including wrapping existing loggers, like 'Fluentd' or implement completely new custom logger. All main features of log manager are configeable through a json config file.}
   spec.homepage      = "https://github.com/BBahrainy/RTALogger.git"
