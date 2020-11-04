@@ -15,11 +15,10 @@ module RTALogger
       semaphore.synchronize do
         u1 = UDPSocket.new
         u1.bind(@host, @port)
-        @log_records.each { |log_record| u1.send log_record.to_s, 0, @host, @port}
+        @log_records.each { |log_record| u1.send log_record.to_s, 0, @host, @port }
         u1.close
       end
       super
     end
-
   end
 end

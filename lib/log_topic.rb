@@ -1,10 +1,8 @@
-# topic
-
-require_relative './log_severity'
-require_relative 'factory/origin/log_factory_record'
+require_relative 'log_severity'
+require_relative 'log_factory_record'
 
 module RTALogger
-  # the main class to logging data
+  # the main class to logging data as topic
   class LogTopic
     include LogSeverity
     include RTALogger::LogFactory

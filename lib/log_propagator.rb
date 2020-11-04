@@ -1,5 +1,4 @@
-require 'thread'
-require_relative './log_repository'
+require_relative 'log_repository'
 
 module RTALogger
   # propagate log records to multiple log repositories

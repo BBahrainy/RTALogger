@@ -1,16 +1,18 @@
 require_relative 'log_formatter'
 
 module RTALogger
+  # text formatter which receive log_record and
+  # returns it's data as delimited text string
   class LogFormatterText < LogFormatter
-    def format(log_record)
+    def format(log_record, delimiter = '|')
       return '' unless log_record
 
-      result = log_record.occurred_at.strftime("%F %H:%M:%S:%3N")
-      result << '|' << log_record.app_name
-      result << '|' << log_record.topic_title
-      result << '|' << log_record.context_id
-      result << '|' << log_record.severity
-      result << '|' << log_record.message.join(' ').gsub('|' , '$<$')
+      result = log_record.occurred_at.strftime('%F %H:%M:%S:%3N')
+      result << delimiter << log_record.app_name
+      result << delimiter << log_record.topic_title
+      result << delimiter << log_record.context_id
+      result << delimiter << log_record.severity
+      result << delimiter << log_record.message.join(' ').gsub(delimiter, '$<$')
 
       result
     end

@@ -1,12 +1,19 @@
 PATH
   remote: .
   specs:
-    RTALogger (0.1.0)
+    RTALogger (0.1.1)
       fluentd (~> 1.11, >= 1.11.4)
+      jbuilder (~> 2.10)
 
 GEM
   remote: https://rubygems.org/
   specs:
+    activesupport (6.0.3.4)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 0.7, < 2)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
+      zeitwerk (~> 2.2, >= 2.2.2)
     concurrent-ruby (1.1.7)
     cool.io (1.7.0)
     diff-lcs (1.4.4)
@@ -21,6 +28,11 @@ GEM
       tzinfo-data (~> 1.0)
       yajl-ruby (~> 1.0)
     http_parser.rb (0.6.0)
+    i18n (1.8.5)
+      concurrent-ruby (~> 1.0)
+    jbuilder (2.10.1)
+      activesupport (>= 5.0.0)
+    minitest (5.14.2)
     msgpack (1.3.3)
     rake (12.3.3)
     rspec (3.10.0)
@@ -40,17 +52,20 @@ GEM
       sigdump (~> 0.2.2)
     sigdump (0.2.4)
     strptime (0.2.5)
-    tzinfo (2.0.2)
-      concurrent-ruby (~> 1.0)
+    thread_safe (0.3.6)
+    tzinfo (1.2.7)
+      thread_safe (~> 0.1)
     tzinfo-data (1.2020.4)
       tzinfo (>= 1.0.0)
     yajl-ruby (1.4.1)
+    zeitwerk (2.4.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   RTALogger!
+  jbuilder
   rake (~> 12.0)
   rspec (~> 3.0)
 

@@ -1,5 +1,3 @@
-require 'thread'
-
 module RTALogger
   # base log repository class
   class LogRepository

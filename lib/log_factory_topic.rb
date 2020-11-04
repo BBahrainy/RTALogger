@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../log_topic'
+require_relative 'log_topic'
 
 module RTALogger
   # this module generates object instance

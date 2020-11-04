@@ -1,0 +1,32 @@
+{
+  "RTALogger":
+  {
+    "Default_Manager": "Develop",
+    "Log_Managers":
+    [
+      {
+        "Manager_Name": "Develop",
+        "Enable": true,
+        "App_Name": "TestApp",
+        "Log_Severity": 2,
+        "Buffer_Size": 100,
+        "Flush_Wait_Seconds": 15,
+        "Formatter" : "JSON",
+        "Repos":
+        [
+          {
+            "Enable": true,
+            "Type": "Console"
+          },
+          {
+            "Enable": false,
+            "Type": "File",
+            "File_Path": "../../log/log.txt",
+            "Roll_Period": "daily",
+            "Roll_Size": "1048576"
+          }
+        ]
+      }
+    ]
+  }
+}

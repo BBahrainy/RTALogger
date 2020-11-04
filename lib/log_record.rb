@@ -25,4 +25,3 @@ module RTALogger
     end
   end
 end
-

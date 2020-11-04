@@ -1,6 +1,4 @@
-require "RTALogger/version"
-
+require 'RTALogger/version'
+# main namespace of the log manager
 module RTALogger
-  class Error < StandardError; end
-  # Your code goes here...
 end

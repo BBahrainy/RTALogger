@@ -22,7 +22,43 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+require 'log_factory_manager'
+require 'log_factory_repository'
+
+controller_name = 'test_controller'
+userID = 5
+
+#create log manager instance
+# this could be a global variable declared in application level
+log_manager = RTALogger::LogFactory.log_manager_instance
+
+#set log manage application name (hard code)
+log_manager.app_name = 'myTestApp'
+
+#load log manager configuration from a json config file
+log_manager.config('rta_logger_config.json')
+
+#add log repository to log manager
+#log_manager.propagator.add_log_repository(RTALogger::LogFactory.new_log_repository_console)
+
+#add new topic to log manager
+# use this api to get a new log topic instance
+# this api could be called in entry point of each service or class initialize method
+topic = log_manager.add_topic(controller_name)
+
+#add log information to log topic
+topic.debug(userID, 'Controller Name=', controller_name, 'this is debug')
+topic.info(userID, 'Controller Name=', controller_name, 'this is an information')
+topic.warning(userID, 'Controller Name=', controller_name, 'this is an warning')
+topic.error(userID, 'Controller Name=', controller_name, 'this is an error')
+topic.fatal(userID, 'Controller Name=', controller_name, 'this is a fatal situation')
+topic.unknown(userID, 'Controller Name=', controller_name, 'this is a unknown situation')
+
+#update specific topic log level if necessary
+#log_manager.update_topic_level(controller_name, RTALogger::LogSeverity::INFO)
+
+#update all topics log level if necessary
+#log_manager.update_all_topics_log_level(RTALogger::LogSeverity::INFO)
 
 ## Development
 

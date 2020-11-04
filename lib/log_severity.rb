@@ -9,7 +9,7 @@ module RTALogger
     WARN = 2
     # A handleable error condition.
     ERROR = 3
-    # An unhandleable error that results in a program crash.
+    # An un-handleable error that results in a program crash.
     FATAL = 4
     # An unknown message that should always be logged.
     UNKNOWN = 5

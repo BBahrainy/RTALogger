@@ -1,10 +1,10 @@
 require 'date'
 require 'thread'
 require 'singleton'
-require_relative 'factory/origin/log_factory_propagator'
-require_relative 'factory/origin/log_factory_repository'
-require_relative 'factory/origin/log_factory_topic'
-require_relative './log_severity'
+require_relative 'log_factory_propagator'
+require_relative 'log_factory_repository'
+require_relative 'log_factory_topic'
+require_relative 'log_severity'
 
 # the module will contain all logger requirements
 module RTALogger

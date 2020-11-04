@@ -1,15 +1,15 @@
 require 'logger'
 require_relative 'log_repository'
-require_relative 'factory/origin/log_factory_file_logger'
-require_relative 'factory/origin/log_factory_log_formatter'
+require_relative 'log_factory_file_logger'
+require_relative 'log_factory_log_formatter'
 
 module RTALogger
   # show log items on console out put
   class LogRepositoryFile < LogRepository
-    def initialize(file_path = 'log.txt', period = 'daily', shift_size = 1048576)
+    def initialize(file_path = 'log.txt', period = 'daily', shift_size = 1_048_576)
       super()
       @file_logger = RTALogger::LogFactory.new_file_logger(file_path, period, shift_size)
-      @formatter = RTALogger::LogFactory::log_formatter_default
+      @formatter = RTALogger::LogFactory.log_formatter_default
     end
 
     protected
@@ -20,6 +20,5 @@ module RTALogger
       end
       super
     end
-
   end
 end
