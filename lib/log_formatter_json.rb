@@ -6,7 +6,7 @@ module RTALogger
   # returns it's data as json string
   class LogFormatterJSON
     def format(log_record)
-      return '' unless log_data
+      return '' unless log_record
 
       jb = Jbuilder.new do |json|
         json.occurred_at log_record.occurred_at.strftime('%F %H:%M:%S:%3N')

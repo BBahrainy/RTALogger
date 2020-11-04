@@ -12,10 +12,10 @@ log_manager = RTALogger::LogFactory.log_manager_instance
 log_manager.app_name = 'myTestApp'
 
 # load log manager configuration from a json config file
-log_manager.config('rta_logger_config.json')
+log_manager.config_use_json_file('rta_logger_config.json')
 
 # add log repository to log manager
-# log_manager.propagator.add_log_repository(RTALogger::LogFactory.new_log_repository_console)
+#log_manager.propagator.add_log_repository(RTALogger::LogFactory.new_log_repository_console)
 
 # add new topic to log manager
 # use this api to get a new log topic instance
