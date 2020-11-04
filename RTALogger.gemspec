@@ -8,13 +8,13 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{An easy to use, easy to extend log manager to prepare standard log API for developers }
   spec.description   = %q{RTA Log Manager has been designed and implemented to provide standard logging API for developers.This prevents chaos in log data format. Also provide multiple extendable log repositories including wrapping existing loggers, like 'Fluentd' or implement completely new custom logger. All main features of log manager are configeable through a json config file.}
-  spec.homepage      = "https://www.RoundTableApps.com"
+  spec.homepage      = "https://github.com/BBahrainy/RTALogger.git"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
 
-  spec.metadata["allowed_push_host"] = "git@github.com:BBahrainy/RTALogger.git"
+  spec.metadata["allowed_push_host"] = "https://github.com/BBahrainy/RTALogger.git"
 
-  spec.metadata["homepage_uri"] = "https://www.RoundTableApps.com"
+  spec.metadata["homepage_uri"] = "https://github.com/BBahrainy/RTALogger.git"
   spec.metadata["source_code_uri"] = "https://github.com/BBahrainy/RTALogger.git"
   spec.metadata["changelog_uri"] = "https://github.com/BBahrainy/RTALogger.git"
 
