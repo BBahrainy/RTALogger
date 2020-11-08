@@ -105,6 +105,109 @@ the result will be:
     {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":4,"message":"Authentication service has been stopped working"}
     {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":5,"message":"An unknown error occured during authentication. user name: Tom"}
 ```
+- json config file sample
+```json
+{
+  "RTALogger":
+  {
+    "Default_Manager": "Develop",
+    "Log_Managers":
+    [
+      {
+        "Manager_Name": "Develop",
+        "Enable": true,
+        "App_Name": "TestApp",
+        "Log_Severity": 2,
+        "Buffer_Size": 100,
+        "Flush_Wait_Seconds": 15,
+        "Formatter" : "JSON",
+        "Repos":
+        [
+          {
+            "Enable": true,
+            "Type": "Console"
+          },
+          {
+            "Enable": true,
+            "Type": "UDP",
+            "Host": "localhost",
+            "Port": 8888
+          },
+          {
+            "Enable": false,
+            "Type": "File",
+            "File_Path": "../../log/log.txt",
+            "Roll_Period": "daily",
+            "Roll_Size": "1048576"
+          },
+          {
+            "Enable": true,
+            "Type": "Fluentd",
+            "Host": "localhost",
+            "Port": "24442",
+            "TLS_Options": 
+            {
+              "ca":",/path/to/cacert.pem",
+              "cert":"/path/to/client-cert.pem",
+              "key":"/path/to/client-key.pem",
+              "key_passphrase":"test"
+             }
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+- json config file structure 
+```comment
+  As we described you cap apply RTA log manager using a json config file.
+  
+  log_manager.config_use_json_file('rta_logger_config.json')
+     
+  The file structure:
+  - RTALogger : the root element of RTALogger json configuration.
+    - Default_Manager: the name of default log manager config, when there is 
+      multiple log manager configuration in Log_Managers array.
+    - Log_Managers : the array of LogManagers with different configuration.
+      It is possible to define multiple log manager configurations for differen usages.
+      - Name: the name of log manager. It will be used to define the default log manager.
+      - Enable: (true/false) The value of this property activate or deactivate entire log manager.
+      - App_Name: Application name as the owner of log data.
+      - Log_Severity: Defines which level of log data will be stored in log repositories.
+      - BufferSize: The memory buffer size (number of buffered log objects) to 
+        decread api consumers wait time. when the buffer is full the flush operation will
+        save buffered logs to log repositoies.
+      - Flush_Wait_Seconds: Time in soconds which log managers wait to flush buffered log objects
+        to log repository.
+      - Formatter: (JSON/TEXT) declare log format when it's required to converrt log object to text.
+      - Repos: Array of log repositories. It is possible to define multiple log repositories to
+        store log data. there are variaty of log repositories and it is possible to
+        add new ones. Each item in Repos array will configure a log repository.
+        - Log repository types and config:
+          1- Console: Show log data in text format on standard out put
+             - "Type":"Console"
+             - "Enable": [true/false] this will activate or deactivate log repository.
+          2- File: Store log data in a file.
+             - "Type":"Console"
+             - "Enable": [true/false] this will activate or deactivate log repository.
+             - "File_Path": [file path and file name] the path and the name to store log data.
+             - "Roll_Period": ["daily"/"weekly"/"monthly"] the period to generate new log file.
+             - "Roll_Size": [bytes]  the maximum size of log file to 
+                roll file and create the new log file
+          3- UDP: Send log data over UDP on network. 
+             - "Type":"Console"
+             - "Enable": [true/false] this will activate or deactivate log repository.
+             - "Host": IP of the server to send log data.
+             - "Port": Port of server to send log data.
+          4- Fluentd: send log data to Fluentd Log collector over network using TCP/IP protocol.
+             - "Type":"Console"
+             - "Enable": [true/false] this will activate or deactivate log repository.
+             - "Host": IP of the server to send log data.
+             - "Port": Port of server to send log data.
+             - "TLS_Options": TLS configuration to stablish a secure TCP connection to Fluentd Server.
+ 
+```
 - Some useful features
 ```ruby
     # change log manager app name at run time
@@ -115,6 +218,34 @@ the result will be:
 
     # update all topics log level if necessary
     log_manager.update_all_topics_log_level(RTALogger::LogSeverity::INFO)
+```
+- Implement and Expand
+  It is possible to implement new log repositories.
+  All repository classes should inherit from 'RTALogger::LogRepository'
+  Here is 'LogRepositoryConsole' implementation:
+```ruby
+require_relative 'log_repository'
+require_relative 'log_factory_log_formatter'
+
+module RTALogger
+  # show log items on console out put
+  class LogRepositoryConsole < LogRepository
+    def initialize
+      super
+
+      @formatter = RTALogger::LogFactory.log_formatter_default
+    end
+
+    protected
+
+    def flush_and_clear
+      semaphore.synchronize do
+        @log_records.each { |log_record| puts @formatter.format(log_record) }
+      end
+      super
+    end
+  end
+end
 ```
 
 ## Development

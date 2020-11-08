@@ -8,5 +8,13 @@ module RTALogger
       RTALogger::LogFormatterJSON.new
       # RTALogger::LogFormatterText.new
     end
+
+    def self.log_formatter_json
+      RTALogger::LogFormatterJSON.new
+    end
+
+    def self.log_formatter_text
+      RTALogger::LogFormatterText.new
+    end
   end
 end

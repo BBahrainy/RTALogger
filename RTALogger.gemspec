@@ -27,6 +27,6 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
-  spec.add_dependency "fluentd", "~> 1.11", ">= 1.11.4"
+  spec.add_dependency "fluent-logger", "~> 0.9"
   spec.add_dependency "jbuilder", "~> 2.10"
 end
