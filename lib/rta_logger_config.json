@@ -24,6 +24,12 @@
             "File_Path": "../../log/log.txt",
             "Roll_Period": "daily",
             "Roll_Size": "1048576"
+          },
+          {
+            "Enable": true,
+            "Type": "Fluentd",
+            "Host": "localhost",
+            "Port": "8888"
           }
         ]
       }
