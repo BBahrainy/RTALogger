@@ -36,8 +36,8 @@ module RTALogger
       @flush_scheduler.run
     end
 
-    def config_use_json_file(config_file_name)
-      config_json = load_config_from_json_file(config_file_name)
+    def config_use_json_file(config_file_name, manager_name = '')
+      config_json = load_config_from_json_file(config_file_name, manager_name)
       apply_config(config_json)
     rescue StandardError => e
       puts e.message
@@ -45,8 +45,8 @@ module RTALogger
       @propagator.add_log_repository(LogFactory.new_log_repository_console)
     end
 
-    def config_use_json_string(config_string)
-      config_json = load_config_from_json_string(config_file_name)
+    def config_use_json_string(config_string, manager_name = '')
+      config_json = load_config_from_json_string(config_string, manager_name)
       apply_config(config_json)
     rescue StandardError => e
       puts e.message
