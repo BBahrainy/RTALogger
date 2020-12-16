@@ -84,25 +84,25 @@ module RTALogger
 
     private
 
-    def load_config_from_json_file(config_file_name)
+    def load_config_from_json_file(config_file_name, manager_name = '')
       config_file = File.open config_file_name
       config_json = JSON.load config_file
-      config_json = extract_config(config_json)
+      config_json = extract_config(config_json, manager_name)
       config_json
     end
 
-    def load_config_from_json_string(config_string)
+    def load_config_from_json_string(config_string, manager_name = '')
       config_json = JSON.parse(config_string)
-      config_json = extract_config(config_json)
+      config_json = extract_config(config_json, manager_name)
       config_json
     end
 
-    def extract_config(json_data)
+    def extract_config(json_data, manager_name = '')
       config_json = json_data['RTALogger']
       raise 'RTALogger configuration not found!' unless config_json
       raise 'Log_Managers section does not exists json configuration' unless config_json['Log_Managers']
       raise 'No config manager defined in json configuration' unless config_json['Log_Managers'].count.positive?
-      manager_name = config_json['Default_Manager']
+      manager_name = config_json['Default_Manager'] if manager_name.blank?
       unless manager_name.to_s.strip.empty?
         config_json = config_json['Log_Managers'].find { |item| item['Manager_Name'] == manager_name }
       end
