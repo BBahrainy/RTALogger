@@ -16,13 +16,13 @@ module RTALogger
 
     def initialize
       @enable = true
-      @app_name = ENV.fetch('RTALogger_App_Name', 'unknownApp')
-      @default_log_level = ENV.fetch('RTALogger_Log_Severity', ::RTALogger::LogSeverity::WARN)
+      @app_name = ENV.fetch('RTA_LOGGER_APP_NAME', 'unknown_app')
+      @default_log_level = ENV.fetch('RTA_LOGGER_LOG_SEVERITY', ::RTALogger::LogSeverity::WARN)
       @topic_semaphore = Mutex.new
       @log_semaphore = Mutex.new
-      @buffer_size = ENV.fetch('RTALogger_Buffer_Size', 100)
+      @buffer_size = ENV.fetch('RTA_LOGGER_BUFFER_SIZE', 100)
       @flush_size = @buffer_size * 20 / 100
-      @flush_wait_time = ENV.fetch('RTALogger_Flush_Wait_Seconds', 15)
+      @flush_wait_time = ENV.fetch('RTA_LOGGER_FLUSH_WAIT_SECONDS', 15)
       @topics = {}
       @log_records = []
       @propagator = LogFactory.new_log_propagator
@@ -98,28 +98,28 @@ module RTALogger
     end
 
     def extract_config(json_data, manager_name = '')
-      config_json = json_data['RTALogger']
+      config_json = json_data['rta_logger']
       raise 'RTALogger configuration not found!' unless config_json
-      raise 'Log_Managers section does not exists json configuration' unless config_json['Log_Managers']
-      raise 'No config manager defined in json configuration' unless config_json['Log_Managers'].count.positive?
-      manager_name = config_json['Default_Manager'] if manager_name.blank?
+      raise 'Log_Managers section does not exists json configuration' unless config_json['log_managers']
+      raise 'No config manager defined in json configuration' unless config_json['log_managers'].count.positive?
+      manager_name = config_json['default_manager'] if manager_name.blank?
       unless manager_name.to_s.strip.empty?
-        config_json = config_json['Log_Managers'].find { |item| item['Manager_Name'] == manager_name }
+        config_json = config_json['log_managers'].find { |item| item['manager_name'] == manager_name }
       end
-      config_json ||= config_json['Log_Managers'][0]
+      config_json ||= config_json['log_managers'][0]
       raise 'Unable to extract RTA Log Manager configuration!' unless config_json
       config_json
     end
 
     def apply_config(config_json)
       raise 'json config not available' unless config_json
-      @enable = config_json['Enable'].nil? ? true : config_json['Enable']
-      @app_name = config_json['App_Name'] if config_json['App_Name'].present?
-      @default_log_level = config_json['Log_Severity'] if config_json['Log_Severity'].present?
-      @buffer_siz = config_json['Buffer_Size'] if config_json['Buffer_Size'].present?
-      @flush_wait_time = config_json['Flush_Wait_Seconds'] if config_json['Flush_Wait_Seconds'].present?
+      @enable = config_json['enable'].nil? ? true : config_json['enable']
+      @app_name = config_json['app_name'] if config_json['app_name'].present?
+      @default_log_level = parse_log_level_to_i(config_json['log_severity']) if config_json['log_severity'].present?
+      @buffer_siz = config_json['buffer_size'] if config_json['buffer_size'].present?
+      @flush_wait_time = config_json['flush_wait_seconds'] if config_json['flush_wait_seconds'].present?
       @propagator.drop_all_repositories
-      config_json['Repos']&.each { |item| @propagator.load_log_repository(item) }
+      config_json['repos']&.each { |item| @propagator.load_log_repository(item) }
     end
 
     def initialize_flush_scheduler
@@ -161,6 +161,29 @@ module RTALogger
 
     def propagate(log_record)
       @propagator.add_log(log_record)
+    end
+
+    def parse_log_level_to_i(log_level)
+      return log_level if log_level.is_a? ::Integer
+
+      case log_level.upcase
+      when 'DEBUG'
+        0
+      when 'INFO'
+        1
+      when 'INFORMATIONّٔ'
+        1
+      when 'WARN'
+        2
+      when 'WARNING'
+        2
+      when 'ERROR'
+        3
+      when 'FATAL'
+        4
+      when 'UNKNOWN'
+        5
+      end
     end
   end
 end

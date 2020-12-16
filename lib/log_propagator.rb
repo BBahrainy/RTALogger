@@ -19,9 +19,9 @@ module RTALogger
     end
 
     def load_log_repository(config_json)
-      type = config_json['Type']
+      type = config_json['type']
       return if type.to_s.strip.empty?
-      enable = config_json['Enable'].nil? ? true : config_json['Enable']
+      enable = config_json['enable'].nil? ? true : config_json['enable']
       return unless enable
 
       log_repository = ::RTALogger::LogFactory.create_repository(type, config_json)

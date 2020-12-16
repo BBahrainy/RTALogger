@@ -81,6 +81,51 @@ To use log manager APIs, first step is to have a quick review on Log Data Struct
     # the parameter is the json config file
     log_manager.config_use_json_file('rta_logger_config.json')
 ```
+- Sample configuration json file
+```
+{
+  "rta_logger":
+  {
+    "default_manager": "develop",
+    "log_managers":
+      [
+        {
+          "manager_name": "develop",
+          "enable": true,
+          "app_name": "TestApp",
+          "log_severity": 0,
+          "buffer_size": 100,
+          "flush_wait_seconds": 15,
+          "repos":
+                  [
+                    {
+                      "enable": true,
+                      "type": "console",
+                      "formatter": "delimited_text",
+                      "delimiter": "|"
+                    },
+                    {
+                      "enable": true,
+                      "type": "File",
+                      "file_path": "./log/log.txt",
+                      "roll_period": "daily",
+                      "roll_size": "1048576",
+                      "formatter": "delimited_text",
+                      "delimiter": "|"
+                    },
+                    {
+                      "enable": true,
+                      "type": "fluentd",
+                      "host": "localhost",
+                      "port": "8888",
+                      "formatter": "json"
+                    }
+                  ]
+        }
+      ]
+  }
+}
+``` 
 - Add new topic to log manager and get the topic instance
 ```ruby
     # the parameter is the topic name

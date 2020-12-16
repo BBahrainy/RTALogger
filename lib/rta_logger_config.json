@@ -1,35 +1,39 @@
 {
-  "RTALogger":
+  "rta_logger":
   {
-    "Default_Manager": "Develop",
-    "Log_Managers":
+    "default_manager": "develop",
+    "log_managers":
     [
       {
-        "Manager_Name": "Develop",
-        "Enable": true,
-        "App_Name": "TestApp",
-        "Log_Severity": 2,
-        "Buffer_Size": 100,
-        "Flush_Wait_Seconds": 15,
-        "Formatter" : "JSON",
-        "Repos":
+        "manager_name": "develop",
+        "enable": true,
+        "app_name": "TestApp",
+        "log_severity": 0,
+        "buffer_size": 100,
+        "flush_wait_seconds": 15,
+        "repos":
         [
           {
-            "Enable": true,
-            "Type": "Console"
+            "enable": true,
+            "type": "console",
+            "formatter": "delimited_text",
+            "delimiter": "|"
           },
           {
-            "Enable": false,
-            "Type": "File",
-            "File_Path": "../../log/log.txt",
-            "Roll_Period": "daily",
-            "Roll_Size": "1048576"
+            "enable": true,
+            "type": "File",
+            "file_path": "./log/log.txt",
+            "roll_period": "daily",
+            "roll_size": "1048576",
+            "formatter": "delimited_text",
+            "delimiter": "|"
           },
           {
-            "Enable": true,
-            "Type": "Fluentd",
-            "Host": "localhost",
-            "Port": "8888"
+            "enable": true,
+            "type": "fluentd",
+            "host": "localhost",
+            "port": "8888",
+            "formatter": "json"
           }
         ]
       }
