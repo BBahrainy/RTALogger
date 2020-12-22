@@ -7,6 +7,23 @@ module RTALogger
       @enable = true
     end
 
+    # @@sub_classes = {}
+
+    # def self.create type
+    #   requested_class = @@sub_classes[type]
+    #   if requested_class
+    #     requested_class.new
+    #   else
+    #     raise "Bad log repository type: #{type}"
+    #   end
+    # end
+    #
+    # def self.register repository_name
+    #   @@sub_classes[repository_name] = self
+    # end
+
+    attr_accessor :enable
+
     def add_log_records(items)
       return 0 unless @enable
       @semaphore.synchronize do
@@ -15,7 +32,14 @@ module RTALogger
       flush_and_clear
     end
 
-    attr_accessor :enable
+    def load_config(config_json)
+      @enable = config_json['enable'].nil? ? true : config_json['enable']
+
+      formatter_config = config_json['formatter']
+      if formatter_config && formatter_config['type']
+        @formatter = LogFactory.create_formatter(formatter_config['type'], formatter_config)
+      end
+    end
 
     protected
 

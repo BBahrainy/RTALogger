@@ -5,15 +5,32 @@ module RTALogger
   class LogRepositoryFluent < LogRepository
     def initialize(host = 'localhost', port = 24224, tls_options = nil)
       super()
-      @host = host
-      @port = port
-      @tls_options = tls_options
       @formatter = RTALogger::LogFactory.log_formatter_json
-      if @tls_options
-        @fluent_logger = ::Fluent::Logger::FluentLogger.new(nil, :host => @host, :port => @port, :use_nonblock => true, :wait_writeable => false)
+      @fluent_logger = create_fluentd_logger(host, port, tls_options)
+    end
+
+    def load_config(config_json)
+      super
+
+      host = config_json['host'].to_s
+      port = config_json['port'].to_s
+      tls_options = config_json['tls_options']
+
+      @fluent_logger = create_fluentd_logger(host, port, tls_options)
+    end
+
+    # register :fluentd
+
+    protected
+
+    def create_fluentd_logger(host, port, tls_options)
+      unless tls_options
+        fluent_logger = ::Fluent::Logger::FluentLogger.new(nil, :host => host, :port => port, :use_nonblock => true, :wait_writeable => false)
       else
-        @fluent_logger = ::Fluent::Logger::FluentLogger.new(nil, :host => @host, :port => @port, :tls_options => @tls_options, :use_nonblock => true, :wait_writeable => false)
+        fluent_logger = ::Fluent::Logger::FluentLogger.new(nil, :host => host, :port => port, :tls_options => tls_options, :use_nonblock => true, :wait_writeable => false)
       end
+
+      fluent_logger
     end
 
     def flush_and_clear

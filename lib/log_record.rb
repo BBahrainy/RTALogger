@@ -21,7 +21,7 @@ module RTALogger
     end
 
     def topic_title
-      @log_topic.topic_title
+      @log_topic.title
     end
   end
 end

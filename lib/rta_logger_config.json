@@ -8,7 +8,7 @@
         "manager_name": "develop",
         "enable": true,
         "app_name": "TestApp",
-        "log_severity": 0,
+        "severity_level": "debug",
         "buffer_size": 100,
         "flush_wait_seconds": 15,
         "repos":
@@ -16,24 +16,41 @@
           {
             "enable": true,
             "type": "console",
-            "formatter": "delimited_text",
-            "delimiter": "|"
+            "formatter":
+            {
+              "type": "text",
+              "delimiter": "|"
+            }
           },
           {
             "enable": true,
-            "type": "File",
-            "file_path": "./log/log.txt",
+            "type": "file",
+            "file_path": "log.txt",
             "roll_period": "daily",
             "roll_size": "1048576",
-            "formatter": "delimited_text",
-            "delimiter": "|"
+            "formatter":
+            {
+              "type": "text",
+              "delimiter": "|"
+            }
           },
           {
             "enable": true,
             "type": "fluentd",
             "host": "localhost",
             "port": "8888",
-            "formatter": "json"
+            "formatter":
+            {
+              "type": "json"
+            }
+          }
+        ],
+        "topics":
+        [
+          {
+            "title": "test",
+            "enable": true,
+            "severity_level": "WARN"
           }
         ]
       }

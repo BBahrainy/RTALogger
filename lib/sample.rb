@@ -4,6 +4,9 @@ require_relative 'log_factory_repository'
 controller_name = 'test_controller'
 userID = 5
 
+
+# RTALogger::LogFactory.register_log_repository :console, 'log_repository_console.rb'
+
 # create log manager instance
 # this could be a global variable declared in application level
 log_manager = RTALogger::LogFactory.log_manager_instance
@@ -21,6 +24,9 @@ log_manager.config_use_json_file('rta_logger_config.json')
 # use this api to get a new log topic instance
 # this api could be called in entry point of each service or class initialize method
 topic = log_manager.add_topic(controller_name)
+test_topic = log_manager.add_topic('test')
+# test_topic.severity_level = ::RTALogger::SeverityLevel::FATAL
+# test_topic.enable = false
 
 # add log information to log topic
 topic.debug(userID, 'Controller Name=', controller_name, 'debug')
@@ -30,8 +36,13 @@ topic.error(userID, 'Controller Name=', controller_name, 'error')
 topic.fatal(userID, 'Controller Name=', controller_name, 'fatal')
 topic.unknown(userID, 'Controller Name=', controller_name, 'unknown')
 
+test_topic.error(userID, 'test_topic', 'error')
+test_topic.fatal(userID, 'test_topic', 'fatal')
+
+puts log_manager.reveal_config
+
 # update specific topic log level if necessary
-# log_manager.update_topic_level(controller_name, RTALogger::LogSeverity::INFO)
+# log_manager.update_topic_level(controller_name, RTALogger::SeverityLevel::INFO)
 
 # update all topics log level if necessary
-# log_manager.update_all_topics_log_level(RTALogger::LogSeverity::INFO)
+# log_manager.update_all_topics_severity_level(RTALogger::SeverityLevel::INFO)

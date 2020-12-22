@@ -93,7 +93,7 @@ To use log manager APIs, first step is to have a quick review on Log Data Struct
           "manager_name": "develop",
           "enable": true,
           "app_name": "TestApp",
-          "log_severity": 0,
+          "severity_level": "debug",
           "buffer_size": 100,
           "flush_wait_seconds": 15,
           "repos":
@@ -157,50 +157,58 @@ the result will be:
 - json config file sample
 ```json
 {
-  "RTALogger":
+  "rta_logger":
   {
-    "Default_Manager": "Develop",
-    "Log_Managers":
+    "default_manager": "develop",
+    "log_managers":
     [
       {
-        "Manager_Name": "Develop",
-        "Enable": true,
-        "App_Name": "TestApp",
-        "Log_Severity": 2,
-        "Buffer_Size": 100,
-        "Flush_Wait_Seconds": 15,
-        "Formatter" : "JSON",
-        "Repos":
+        "manager_name": "develop",
+        "enable": true,
+        "app_name": "TestApp",
+        "severity_level": "debug",
+        "buffer_size": 100,
+        "flush_wait_seconds": 15,
+        "repos":
         [
           {
-            "Enable": true,
-            "Type": "Console"
-          },
-          {
-            "Enable": true,
-            "Type": "UDP",
-            "Host": "localhost",
-            "Port": 8888
-          },
-          {
-            "Enable": false,
-            "Type": "File",
-            "File_Path": "../../log/log.txt",
-            "Roll_Period": "daily",
-            "Roll_Size": "1048576"
-          },
-          {
-            "Enable": true,
-            "Type": "Fluentd",
-            "Host": "localhost",
-            "Port": "24442",
-            "TLS_Options": 
+            "enable": true,
+            "type": "console",
+            "formatter":
             {
-              "ca":",/path/to/cacert.pem",
-              "cert":"/path/to/client-cert.pem",
-              "key":"/path/to/client-key.pem",
-              "key_passphrase":"test"
-             }
+              "type": "text",
+              "delimiter": "|"
+            }
+          },
+          {
+            "enable": false,
+            "type": "file",
+            "file_path": "log.txt",
+            "roll_period": "daily",
+            "roll_size": "1048576",
+            "formatter":
+            {
+              "type": "text",
+              "delimiter": "|"
+            }
+          },
+          {
+            "enable": false,
+            "type": "fluentd",
+            "host": "localhost",
+            "port": "8888",
+            "formatter":
+            {
+              "type": "json"
+            }
+          }
+        ],
+        "topics":
+        [
+          {
+            "title": "test",
+            "enable": true,
+            "severity_level": "info"
           }
         ]
       }
@@ -215,47 +223,64 @@ the result will be:
   log_manager.config_use_json_file('rta_logger_config.json')
      
   The file structure:
-  - RTALogger : the root element of RTALogger json configuration.
-    - Default_Manager: the name of default log manager config, when there is 
+  - rta_logger : the root element of rta_logger json configuration.
+    - default_manager: the name of default log manager config, when there is 
       multiple log manager configuration in Log_Managers array.
-    - Log_Managers : the array of LogManagers with different configuration.
+    - log_managers : the array of LogManagers with different configuration.
       It is possible to define multiple log manager configurations for differen usages.
-      - Name: the name of log manager. It will be used to define the default log manager.
-      - Enable: (true/false) The value of this property activate or deactivate entire log manager.
-      - App_Name: Application name as the owner of log data.
-      - Log_Severity: Defines which level of log data will be stored in log repositories.
-      - BufferSize: The memory buffer size (number of buffered log objects) to 
+      - manager_name: the name of log manager. It will be used to define the default log manager.
+      - enable: (true/false) The value of this property activate or deactivate entire log manager.
+      - app_name: Application name as the owner of log data.
+      - severity_level: Defines which level of log data will be stored in log repositories.
+      - buffer_size: The memory buffer size (number of buffered log objects) to 
         decread api consumers wait time. when the buffer is full the flush operation will
         save buffered logs to log repositoies.
-      - Flush_Wait_Seconds: Time in soconds which log managers wait to flush buffered log objects
+      - flush_wait_seconds: Time in soconds which log managers wait to flush buffered log objects
         to log repository.
-      - Formatter: (JSON/TEXT) declare log format when it's required to converrt log object to text.
-      - Repos: Array of log repositories. It is possible to define multiple log repositories to
+      - repos: Array of log repositories. It is possible to define multiple log repositories to
         store log data. there are variaty of log repositories and it is possible to
         add new ones. Each item in Repos array will configure a log repository.
+        Pre-defined types are described below, also it's possible to implement your custome repo type 
+        and register it to RTALogger.
         - Log repository types and config:
-          1- Console: Show log data in text format on standard out put
-             - "Type":"Console"
-             - "Enable": [true/false] this will activate or deactivate log repository.
-          2- File: Store log data in a file.
-             - "Type":"Console"
-             - "Enable": [true/false] this will activate or deactivate log repository.
-             - "File_Path": [file path and file name] the path and the name to store log data.
-             - "Roll_Period": ["daily"/"weekly"/"monthly"] the period to generate new log file.
-             - "Roll_Size": [bytes]  the maximum size of log file to 
+          1- console: Show log data in text format on standard out put
+             - "type": "console"
+             - "enable": [true/false] this will activate or deactivate log repository.
+             - "foramtter" is the text, json or any custome defined types as LogRecord formatter
+                - "type": ["text"/"json"] type of formatter
+                - "delimiter": [any text delimiter you need.(as an instance pipe line "|")]
+                if formatter not defined then the json formatter will be used
+          2- file: Store log data in a file.
+             - "type": "console"
+             - "enable": [true/false] this will activate or deactivate log repository.
+             - "file_path": [file path and file name] the path and the name to store log data.
+             - "roll_period": ["daily"/"weekly"/"monthly"] the period to generate new log file.
+             - "roll_size": [bytes]  the maximum size of log file to 
                 roll file and create the new log file
-          3- UDP: Send log data over UDP on network. 
-             - "Type":"Console"
-             - "Enable": [true/false] this will activate or deactivate log repository.
-             - "Host": IP of the server to send log data.
-             - "Port": Port of server to send log data.
-          4- Fluentd: send log data to Fluentd Log collector over network using TCP/IP protocol.
-             - "Type":"Console"
-             - "Enable": [true/false] this will activate or deactivate log repository.
-             - "Host": IP of the server to send log data.
-             - "Port": Port of server to send log data.
-             - "TLS_Options": TLS configuration to stablish a secure TCP connection to Fluentd Server.
- 
+             - "foramtter" is the text, json or any custome defined types as LogRecord formatter
+                - "type": ["text"/"json"] type of formatter
+                - "delimiter": [any text delimiter you need.(as an instance pipe line "|")]
+                if formatter not defined then the json formatter will be used
+          3- udp: Send log data over UDP on network. 
+             - "type": "udp"
+             - "enable": [true/false] this will activate or deactivate log repository.
+             - "host": IP of the server to send log data.
+             - "port": Port of server to send log data.
+          4- fluentd: send log data to Fluentd Log collector over network using TCP/IP protocol.
+             - "type": "fluentd"
+             - "enable": [true/false] this will activate or deactivate log repository.
+             - "host": IP of the server to send log data.
+             - "port": Port of server to send log data.
+             - "tls_options": TLS configuration to stablish a secure TCP connection to Fluentd Server.
+             - "foramtter" is the text, json or any custome defined types as LogRecord formatter
+                - "type": ["text"/"json"] type of formatter
+                - "delimiter": [any text delimiter you need.(as an instance pipe line "|")]
+                if formatter not defined then the json formatter will be used
+        - topics: This is an optional item. When you need to customize a specific topic severity level or
+                  enable value, you can define the settings here.
+          - title: The topic title to customize. (mandatoy).
+          - severity_level: Defines which level of log data will be stored in log repositories.
+          - enable: [true/false] to enable or disable logging process of the topic.
 ```
 - Some useful features
 ```ruby
@@ -263,14 +288,38 @@ the result will be:
     log_manager.app_name = 'myTestApp'
 
     # update specific topic log level if necessary
-    log_manager.update_topic_level(controller_name, RTALogger::LogSeverity::INFO)
+    log_manager.update_topic_severity_level(topic_title, RTALogger::SeverityLevel::INFO)
 
-    # update all topics log level if necessary
-    log_manager.update_all_topics_log_level(RTALogger::LogSeverity::INFO)
+    # update all topics severity level if necessary
+    log_manager.update_all_topics_severity_level(RTALogger::SeverityLevel::INFO)
+
+    # enable or disable specific topic if necessary
+    log_manager.update_topic_enable(topic_title, [true/false])
+
+    # enable or disable all topic if necessary
+    log_manager.update_all_topics_enable([true/false])
 ```
 - Implement and Expand
-  It is possible to implement new log repositories.
-  All repository classes should inherit from 'RTALogger::LogRepository'
+  It is possible to implement new log repositories. There will be fue rules to implement and
+  integrate new customized log repository with RTALogger LogManager.
+  
+  1- Define you class inside RTALogger module.
+  
+  2- The class should be inherited from 'RTALogger::LogRepository'.
+  
+  3- Also appropriate naming convention is necessary. 
+     As an example if you are implementing a Console Repo, your class name should be LogRepositoryConsole and 
+     your source code in a ruby file and name it log_repository_console.rb
+  
+  4- After implementing your own log repository, you should register the class at run-time using the following syntax:
+  ```ruby
+  RTALogger::LogFactory.register_log_repository :console, 'log_repository_console.rb'
+  ```
+  Another example: LogRepositoryMyCustomizedUdp
+
+  ```ruby
+  RTALogger::LogFactory.register_log_repository :my_customized_udp, 'log_repository_my_customized_udp.rb'
+  ```
   Here is 'LogRepositoryConsole' implementation:
 ```ruby
 require_relative 'log_repository'

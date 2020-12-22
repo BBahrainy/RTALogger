@@ -4,7 +4,7 @@ require_relative 'log_formatter'
 module RTALogger
   # json formatter which receive log_record and
   # returns it's data as json string
-  class LogFormatterJSON
+  class LogFormatterJson < LogFormatter
     def format(log_record)
       return '' unless log_record
 

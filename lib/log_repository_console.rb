@@ -10,6 +10,12 @@ module RTALogger
       @formatter = RTALogger::LogFactory.log_formatter_default
     end
 
+    def load_config(config_json)
+      super
+    end
+
+    # register :console
+
     protected
 
     def flush_and_clear

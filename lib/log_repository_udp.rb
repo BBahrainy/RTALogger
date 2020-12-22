@@ -5,18 +5,26 @@ module RTALogger
   class LogRepositoryUDP < LogRepository
     def initialize(host = '127.0.0.1', port = 4913)
       super()
-      @host = host
-      @port = port
+      @udp_socket = UDPSocket.new
+      @udp_socket.bind(host, port)
     end
+
+    def load_config(config_json)
+      super
+
+      host = config_json['host'].to_s
+      port = config_json['port'].nil? ? 4913 : config_json['port'].to_i
+      @udp_socket = UDPSocket.new
+      @udp_socket.bind(host, port)
+    end
+
+    # register :udp
 
     protected
 
     def flush_and_clear
       semaphore.synchronize do
-        u1 = UDPSocket.new
-        u1.bind(@host, @port)
-        @log_records.each { |log_record| u1.send log_record.to_s, 0, @host, @port }
-        u1.close
+        @log_records.each { |log_record| @udp_socket.send @formatter.format(log_record), 0, @host, @port }
       end
       super
     end
