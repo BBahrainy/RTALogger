@@ -11,7 +11,7 @@
         "severity_level": "debug",
         "buffer_size": 100,
         "flush_wait_seconds": 15,
-        "repos":
+        "repositories":
         [
           {
             "enable": true,

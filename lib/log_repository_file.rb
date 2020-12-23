@@ -7,8 +7,10 @@ module RTALogger
   class LogRepositoryFile < LogRepository
     def initialize(file_path = 'log.txt', period = 'daily', shift_size = 1_048_576)
       super()
-      @file_logger = create_ruby_logger(file_path, period, shift_size)
-      @formatter = RTALogger::LogFactory.log_formatter_default
+      @file_path = file_path
+      @period = period
+      @shift_size = shift_size
+      @file_logger = create_ruby_logger(@file_path, @period, @shift_size)
     end
 
     def load_config(config_json)
@@ -20,6 +22,15 @@ module RTALogger
       @file_logger = create_ruby_logger(file_path, period, shift_size)
     end
 
+    def to_builder
+      json = super
+      json.enable enable
+      json.file_path @file_path
+      json.period @period
+      json.shift_size @shift_size
+
+      json
+    end
     # register :file
 
     protected

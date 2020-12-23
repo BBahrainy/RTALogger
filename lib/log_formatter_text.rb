@@ -1,9 +1,9 @@
-require_relative 'log_formatter'
+require_relative 'log_formatter_base'
 
 module RTALogger
   # text formatter which receive log_record and
   # returns it's data as delimited text string
-  class LogFormatterText < LogFormatter
+  class LogFormatterText < LogFormatterBase
     def format(log_record)
       return '' unless log_record
 

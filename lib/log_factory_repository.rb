@@ -32,6 +32,6 @@ module RTALogger
     @log_repositories = {:console => 'log_repository_console.rb',
                           :file =>  'log_repository_file.rb',
                           :udp =>  'log_repository_upd.rb',
-                          :fluentd => 'log_repository_fluetnd.rb'}
+                          :fluentd => 'log_repository_fluentd.rb'}
   end
 end

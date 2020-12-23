@@ -1,10 +1,10 @@
 require 'jbuilder'
-require_relative 'log_formatter'
+require_relative 'log_formatter_base'
 
 module RTALogger
   # json formatter which receive log_record and
   # returns it's data as json string
-  class LogFormatterJson < LogFormatter
+  class LogFormatterJson < LogFormatterBase
     def format(log_record)
       return '' unless log_record
 

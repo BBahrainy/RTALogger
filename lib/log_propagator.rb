@@ -5,17 +5,19 @@ module RTALogger
   class LogPropagator
     def initialize
       @semaphore = Mutex.new
-      @log_records = []
-      @log_repositories = []
+      @records = []
+      @repositories = []
     end
 
-    def add_log(log_record)
-      @semaphore.synchronize { @log_records.push(log_record.dup) }
+    attr_reader :repositories
+
+    def add_log(record)
+      @semaphore.synchronize { @records.push(record.dup) }
     end
 
-    def add_log_repository(log_repository)
-      return unless log_repository.is_a? RTALogger::LogRepository
-      @log_repositories.push(log_repository) unless @log_repositories.include?(log_repository)
+    def add_log_repository(repository)
+      return unless repository.is_a? RTALogger::LogRepository
+      @repositories.push(repository) unless @repositories.include?(repository)
     end
 
     def load_log_repository(config_json)
@@ -24,20 +26,20 @@ module RTALogger
       enable = config_json['enable'].nil? ? true : config_json['enable']
       return unless enable
 
-      log_repository = ::RTALogger::LogFactory.create_repository(type, config_json)
-      add_log_repository(log_repository)
+      repository = ::RTALogger::LogFactory.create_repository(type, config_json)
+      add_log_repository(repository)
     end
 
     def drop_all_repositories
-      @semaphore.synchronize { @log_repositories.clear }
+      @semaphore.synchronize { @repositories.clear }
     end
 
     def propagate
       @semaphore.synchronize do
-        @log_repositories.each do |log_repository|
-          log_repository.add_log_records(@log_records)
+        @repositories.each do |repository|
+          repository.add_log_records(@records)
         end
-        @log_records.clear
+        @records.clear
       end
     end
   end

@@ -2,10 +2,11 @@ require 'fluent-logger'
 require_relative 'log_repository'
 
 module RTALogger
-  class LogRepositoryFluent < LogRepository
+  class LogRepositoryFluentd < LogRepository
     def initialize(host = 'localhost', port = 24224, tls_options = nil)
       super()
-      @formatter = RTALogger::LogFactory.log_formatter_json
+      @host = host
+      @port = port
       @fluent_logger = create_fluentd_logger(host, port, tls_options)
     end
 
@@ -19,6 +20,14 @@ module RTALogger
       @fluent_logger = create_fluentd_logger(host, port, tls_options)
     end
 
+    def to_builder
+      json = super
+      json.enable enable
+      json.host @host
+      json.port @port
+
+      json
+    end
     # register :fluentd
 
     protected

@@ -4,7 +4,6 @@ require_relative 'log_factory_repository'
 controller_name = 'test_controller'
 userID = 5
 
-
 # RTALogger::LogFactory.register_log_repository :console, 'log_repository_console.rb'
 
 # create log manager instance

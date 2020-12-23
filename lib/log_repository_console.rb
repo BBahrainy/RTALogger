@@ -6,8 +6,6 @@ module RTALogger
   class LogRepositoryConsole < LogRepository
     def initialize
       super
-
-      @formatter = RTALogger::LogFactory.log_formatter_default
     end
 
     def load_config(config_json)

@@ -1,3 +1,5 @@
+require_relative 'log_formatter_base'
+
 module RTALogger
   # Log factory to get new instance of log formatter
   module LogFactory
@@ -8,7 +10,6 @@ module RTALogger
     def self.create_formatter(type, config_json = '')
       lib_file = @log_formatters[type.to_sym]
       raise "unregistered formatter class: #{type.to_s}" if lib_file.nil? || lib_file.empty?
-
       begin
         load lib_file
       rescue
@@ -30,6 +31,6 @@ module RTALogger
     end
 
     @log_formatters = {:text => 'log_formatter_text.rb',
-                          :json =>  'log_formatter_json.rb'}
+                       :json =>  'log_formatter_json.rb'}
   end
 end

@@ -58,7 +58,6 @@ module RTALogger
       @config_file_name = file_name if config_json
       apply_config(config_json)
     rescue StandardError => e
-      puts e.message
       @propagator.drop_all_repositories
       @propagator.add_log_repository(LogFactory.create_repository(:console))
     end
@@ -67,7 +66,6 @@ module RTALogger
       config_json = load_config_from_json_string(config_string, manager_name)
       apply_config(config_json)
     rescue StandardError => e
-      puts e.message
       @propagator.drop_all_repositories
       @propagator.add_log_repository(LogFactory.create_repository(:console))
     end
@@ -113,6 +111,9 @@ module RTALogger
           json.buffer_size buffer_size
           json.flush_size flush_size
           json.flush_wait_time flush_wait_time
+          json.repositories do
+            json.array! @propagator.repositories.collect { |repository| repository.to_builder.attributes! }
+          end
           json.topics do
             json.array! topics.keys.collect { |topic_key| @topics[topic_key].to_builder.attributes! }
           end
@@ -169,7 +170,7 @@ module RTALogger
     end
 
     def apply_config_repos(config_json)
-      config_json['repos']&.each { |item| @propagator.load_log_repository(item) }
+      config_json['repositories']&.each { |item| @propagator.load_log_repository(item) }
     end
 
     def apply_config_topics(config_json)
