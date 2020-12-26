@@ -214,7 +214,7 @@ the result will be:
   }
 }
 ```
-- json config file structure 
+### json config file structure 
 ```comment
   As we described you cap apply RTA log manager using a json config file.
   
@@ -280,7 +280,7 @@ the result will be:
           - severity_level: Defines which level of log data will be stored in log repositories.
           - enable: [true/false] to enable or disable logging process of the topic.
 ```
-- Some useful features
+###Some useful features
 ```ruby
     # change log manager app name at run time
     log_manager.app_name = 'myTestApp'
@@ -297,7 +297,7 @@ the result will be:
     # enable or disable all topic if necessary
     log_manager.update_all_topics_enable([true/false])
 ```
-- Implement and Expand
+### Implement and Expand
   It is possible to implement new log repositories. There will be fue rules to implement and
   integrate new customized log repository with RTALogger LogManager.
   
@@ -344,16 +344,9 @@ module RTALogger
 end
 ```
 
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/BBahrainy/RTALogger.
-
 
 ## License
 
