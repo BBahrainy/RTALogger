@@ -1,10 +1,13 @@
 require 'jbuilder'
 require_relative 'log_formatter_base'
+require_relative 'severity_level'
 
 module RTALogger
   # json formatter which receive log_record and
   # returns it's data as json string
   class LogFormatterJson < LogFormatterBase
+    include SeverityLevel
+
     def format(log_record)
       return '' unless log_record
 
@@ -13,7 +16,7 @@ module RTALogger
         json.app_name log_record.app_name
         json.topic_title log_record.topic_title
         json.context_id log_record.context_id
-        json.severity log_record.severity
+        json.severity parse_severity_level_to_s(log_record.severity)
         json.message log_record.message.flatten.join(' ')
       end
 

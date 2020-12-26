@@ -7,26 +7,24 @@ All log manager's main features are configable through a json config file.
 
 Main purposes of developing this gem are:
 - Creating standard logging API to seperate application from existing variety of loggers.
-- Wrapping around existing loggers so get advantage of different loggers at the same time.
-- Make it possible to easily replace a logger component with a new one. (for example Rails standard Logger with Fluentd)
-  without any changes in the consumer application. 
-- Creating easy to use logger interface.
-- Apply some rules and restrictions about log structure and data format, which prevents chaos in application log information.
-- No interrupt or wait time for log consumer modules.
+- Wrapping around existing loggers to get advantage of different loggers at the same time.
+- Make it possible to easily replace a logger component with new one without any changes in the consumer application.(for example Rails standard Logger with Fluentd)
+- Creating easy to use logger interface for developers.
+- Apply some rules and restrictions about log structure and data format, which prevents chaos in application's log information.
+- No interrupt, wait time or overhead for log consumer modules.
 - Utilize multiple log repositories at the same time in background (Console, File, UDP, FluentD, etc.) 
-- Make it possible to implement customized log repositories.
+- Make it possible to implement customize log repositories.
 
 Main Features:
 - Creating multiple log manager instances with different configuration is possible entire application.
 - Each log manager instance could be configured via a json file.
 - Each log manager instance could be config to use multiple log repositories such as Console, File, UDP, Fluentd.
 - Runtime configurations could be applied through log manager APIs.
-- By using multi threading techniques and also buffering techniques, 
-  all logging process will handled in seperated thread.
+- By using multi threading and buffering techniques, all logging process will handled in seperated thread.
   So the log consumer modules should not be wait for log manager to finish the logging task.
 - Multiple standard log severity levels are available through topic APIs (debug, info, warning, error, fatal, unknown)
 - Main features could be set and manipulate through json configuration file.
-- And at the end, it is easy to use for ruby backend developers. 
+- And at the end, it is easy to use for ruby developers. 
 
 ## Installation
 
@@ -36,11 +34,11 @@ Add this line to your application's Gemfile:
 gem 'RTALogger'
 ```
 
-And then execute:
+Then execute:
 
     $ bundle install
 
-Or install it yourself as:
+Or install it yourself via following command:
 
     $ gem install RTALogger
 
@@ -51,12 +49,12 @@ To add gem to your rails application:
 ## Usage
 #### RTA Log Data Structure
 To use log manager APIs, first step is to have a quick review on Log Data Structure
-- Application: The root of each log data record is Application, which specify the log data owner application.
+- Application: The root of each log data record is the Application name, which specify the log data owner application.
 - Topic: By adding multiple topics to log manager you can categorize log data in logical topics.
 - Context: Under each topic, one or multiple contexts (in one level) could be defined. 
-- As an instance the Application could by 'MyEShopApp', one of Topics could be 'Authentication' and 
-  Contexts could be 'uer_name' which attend in application authorization process.
-- The next step is log severity level, which determines that the log record severity (debug, information, warning, error, fatal, unknown)
+- As an instance for Application 'MyEShopApp', one of Topics could be 'Authentication' and 
+  Context could be 'uer_name' which attend in application authorization process.
+- The next step is log severity level, which determines the log record severity (debug, information, warning, error, fatal, unknown)
 - At last the final element is log message, which contains log message data.
 
 ### Which Log Severity Levels to use
@@ -96,7 +94,7 @@ To use log manager APIs, first step is to have a quick review on Log Data Struct
           "severity_level": "debug",
           "buffer_size": 100,
           "flush_wait_seconds": 15,
-          "repos":
+          "repositories":
                   [
                     {
                       "enable": true,
@@ -147,12 +145,12 @@ To use log manager APIs, first step is to have a quick review on Log Data Struct
 ```
 the result will be:
 ```
-    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":0,"message":"user_id is nil for user: Tom"}
-    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":1,"message":"User Tom is trying to login"}
-    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":2,"message":"Authentication failed for user Tom"}
-    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":3,"message":"Error connecting to data base for user Tom"}
-    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":4,"message":"Authentication service has been stopped working"}
-    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":5,"message":"An unknown error occured during authentication. user name: Tom"}
+    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":"DEBUG","message":"user_id is nil for user: Tom"}
+    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":"INFO","message":"User Tom is trying to login"}
+    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":"WARN","message":"Authentication failed for user Tom"}
+    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":"ERROR","message":"Error connecting to data base for user Tom"}
+    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":"FATAL","message":"Authentication service has been stopped working"}
+    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":"UNKNOWN","message":"An unknown error occured during authentication. user name: Tom"}
 ```
 - json config file sample
 ```json
@@ -169,7 +167,7 @@ the result will be:
         "severity_level": "debug",
         "buffer_size": 100,
         "flush_wait_seconds": 15,
-        "repos":
+        "repositories":
         [
           {
             "enable": true,
@@ -232,12 +230,12 @@ the result will be:
       - enable: (true/false) The value of this property activate or deactivate entire log manager.
       - app_name: Application name as the owner of log data.
       - severity_level: Defines which level of log data will be stored in log repositories.
-      - buffer_size: The memory buffer size (number of buffered log objects) to 
+      - buffer_size: Minimune possible value for this attribute is 100 and defines memory buffer size (number of buffered log objects) to 
         decread api consumers wait time. when the buffer is full the flush operation will
         save buffered logs to log repositoies.
-      - flush_wait_seconds: Time in soconds which log managers wait to flush buffered log objects
+      - flush_wait_seconds: Minimum possible value for this attribure is 10 seconds and defines time in soconds which log managers wait to flush buffered log records
         to log repository.
-      - repos: Array of log repositories. It is possible to define multiple log repositories to
+      - repositories: Array of log repositories. It is possible to define multiple log repositories to
         store log data. there are variaty of log repositories and it is possible to
         add new ones. Each item in Repos array will configure a log repository.
         Pre-defined types are described below, also it's possible to implement your custome repo type 

@@ -10,7 +10,7 @@
         "app_name": "TestApp",
         "severity_level": "debug",
         "buffer_size": 100,
-        "flush_wait_seconds": 15,
+        "flush_wait_seconds": 10,
         "repositories":
         [
           {
@@ -30,7 +30,7 @@
             "roll_size": "1048576",
             "formatter":
             {
-              "type": "text",
+              "type": "json",
               "delimiter": "|"
             }
           },

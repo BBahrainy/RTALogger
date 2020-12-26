@@ -26,9 +26,9 @@ module RTALogger
       @config_file_name = ''
       @topic_semaphore = Mutex.new
       @log_semaphore = Mutex.new
-      @buffer_size = ENV.fetch('RTA_LOGGER_BUFFER_SIZE', 100)
+      self.buffer_size = ENV.fetch('RTA_LOGGER_BUFFER_SIZE', 100)
       @flush_size = @buffer_size * 20 / 100
-      @flush_wait_time = ENV.fetch('RTA_LOGGER_FLUSH_WAIT_SECONDS', 15)
+      self.flush_wait_time = ENV.fetch('RTA_LOGGER_FLUSH_WAIT_SECONDS', 15)
       @topics = {}
       @log_records = []
       @propagator = LogFactory.new_log_propagator
@@ -47,11 +47,25 @@ module RTALogger
     attr_accessor :app_name
     attr_reader :propagator
     attr_accessor :default_severity_level
-    attr_accessor :buffer_size
     attr_reader :flush_size
-    attr_accessor :flush_wait_time
     attr_reader :topics
     attr_reader :config_file_name
+
+    def buffer_size
+      @buffer_size
+    end
+
+    def buffer_size=(size)
+      @buffer_size = size < 100 ? 100 : size
+    end
+
+    def flush_wait_time
+      @flush_wait_time
+    end
+
+    def flush_wait_time=(time_in_seconds)
+      @flush_wait_time = time_in_seconds < 10 ? 10 : time_in_seconds
+    end
 
     def config_use_json_file(file_name, manager_name = '')
       config_json = load_config_from_json_file(file_name, manager_name)
@@ -162,8 +176,8 @@ module RTALogger
       @enable = config_json['enable'].nil? ? true : config_json['enable']
       @app_name = config_json['app_name'] unless config_json['app_name'].empty?
       @default_severity_level = parse_severity_level_to_i(config_json['severity_level']) if config_json['severity_level']
-      @buffer_size = config_json['buffer_size'] if config_json['buffer_size']
-      @flush_wait_time = config_json['flush_wait_seconds'] if config_json['flush_wait_seconds']
+      self.buffer_size = config_json['buffer_size'] if config_json['buffer_size']
+      self.flush_wait_time = config_json['flush_wait_seconds'] if config_json['flush_wait_seconds']
       @propagator.drop_all_repositories
       apply_config_repos(config_json)
       apply_config_topics(config_json)
@@ -187,7 +201,7 @@ module RTALogger
       @flush_scheduler = Thread.new do
         loop do
           elapsed_seconds = ((DateTime.now - @last_flush_time) * 24 * 60 * 60).to_i
-          flush if elapsed_seconds > @flush_wait_time
+          flush if elapsed_seconds > flush_wait_time
           sleep(1)
           break if @exit_flush_scheduler
         end
