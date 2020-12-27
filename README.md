@@ -58,12 +58,13 @@ To use log manager APIs, first step is to have a quick review on Log Data Struct
 - At last the final element is log message, which contains log message data.
 
 ### Which Log Severity Levels to use
-- DEBUG = 0 : Low-level information, mostly for developers.
-- INFO = 1 : Generic (useful) information about system operation.
-- WARN = 2 : A warning, which it does NOT cause crashing the process.
-- ERROR = 3 : A handleable error condition.
-- FATAL = 4 : An un-handleable error that results in a program crash.
-- UNKNOWN = 5 : An unknown message that should always be logged.
+- TRACE = 0 : all information that helps us to trace the processing of an incoming request through our application.
+- DEBUG = 1  : Low-level information, mostly for developers.
+- INFO = 2 : Generic (useful) information about system operation.
+- WARN = 3 : A warning, which it does NOT cause crashing the process.
+- ERROR = 4 : A handleable error condition.
+- FATAL = 5 : An un-handleable error that results in a program crash.
+- UNKNOWN = 6 : An unknown message that should always be logged.
     
 ### Time for coding
 - create log manager instance:
@@ -86,41 +87,61 @@ To use log manager APIs, first step is to have a quick review on Log Data Struct
   {
     "default_manager": "develop",
     "log_managers":
-      [
-        {
-          "manager_name": "develop",
-          "enable": true,
-          "app_name": "TestApp",
-          "severity_level": "debug",
-          "buffer_size": 100,
-          "flush_wait_seconds": 15,
-          "repositories":
-                  [
-                    {
-                      "enable": true,
-                      "type": "console",
-                      "formatter": "delimited_text",
-                      "delimiter": "|"
-                    },
-                    {
-                      "enable": true,
-                      "type": "File",
-                      "file_path": "./log/log.txt",
-                      "roll_period": "daily",
-                      "roll_size": "1048576",
-                      "formatter": "delimited_text",
-                      "delimiter": "|"
-                    },
-                    {
-                      "enable": true,
-                      "type": "fluentd",
-                      "host": "localhost",
-                      "port": "8888",
-                      "formatter": "json"
-                    }
-                  ]
-        }
-      ]
+    [
+      {
+        "title": "develop",
+        "enable": true,
+        "app_name": "TestApp",
+        "severity_level": "trace",
+        "buffer_size": 100,
+        "flush_wait_seconds": 10,
+        "repositories":
+        [
+          {
+            "type": "console",
+            "title": "console_repo_1",
+            "enable": true,
+            "formatter":
+            {
+              "type": "text",
+              "delimiter": "|"
+            }
+          },
+          {
+            "type": "file",
+            "title": "file_repo_1",
+            "enable": true,
+            "file_path": "log.txt",
+            "roll_period": "daily",
+            "roll_size": "1048576",
+            "formatter":
+            {
+              "type": "json",
+              "delimiter": "|"
+            }
+          },
+          {
+            "enable": true,
+            "title": "console_repo_1",
+            "type": "fluentd",
+            "host": "localhost",
+            "port": "8888",
+            "formatter":
+            {
+              "type": "json"
+            }
+          }
+        ],
+        "topics":
+        [
+          {
+            "title": "test",
+            "enable": true,
+            "severity_level": "WARN"
+          }
+        ]
+      }
+    ]
   }
 }
 ``` 
@@ -136,21 +157,25 @@ To use log manager APIs, first step is to have a quick review on Log Data Struct
     # Assume user 'Tom' is trying to authenticate we will use user_name as log Context_id
     user_name = 'Tom'
     topic = log_manager.add_topic('Authentication')
+    topic.trace(user_name, 'Authentication process began for:', user_name)
     topic.debug(user_name, 'use_id is nil for user:', user_name)
     topic.info(user_name, 'User ', user_name , ' is trying to login.')
     topic.warning(user_name, 'Authentication failed for user ', user_name)
     topic.error(user_name, 'Error connecting to data base for user ', user_name)
     topic.fatal(user_name, 'Authentication service has been stopped working')
     topic.unknown(user_name, 'An unknown error occured during authentication. user name:', user_name)
+    topic.trace(user_name, 'Authentication process end for:', user_name)
 ```
 the result will be:
 ```
+    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":"TRACE","message"Authentication process began for: Tom"}
     {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":"DEBUG","message":"user_id is nil for user: Tom"}
     {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":"INFO","message":"User Tom is trying to login"}
     {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":"WARN","message":"Authentication failed for user Tom"}
     {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":"ERROR","message":"Error connecting to data base for user Tom"}
     {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":"FATAL","message":"Authentication service has been stopped working"}
     {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":"UNKNOWN","message":"An unknown error occured during authentication. user name: Tom"}
+    {"occurred_at":"2020-11-04 15:56:58:785","app_name":"TestApp","topic_title":"Authentication","context_id":"Tom","severity":"TRACE","message"Authentication process end for: Tom"}
 ```
 - json config file sample
 ```json
@@ -161,17 +186,18 @@ the result will be:
     "log_managers":
     [
       {
-        "manager_name": "develop",
+        "title": "develop",
         "enable": true,
         "app_name": "TestApp",
-        "severity_level": "debug",
+        "severity_level": "trace",
         "buffer_size": 100,
-        "flush_wait_seconds": 15,
+        "flush_wait_seconds": 10,
         "repositories":
         [
           {
-            "enable": true,
             "type": "console",
+            "title": "console_repo_1",
+            "enable": true,
             "formatter":
             {
               "type": "text",
@@ -179,19 +205,21 @@ the result will be:
             }
           },
           {
-            "enable": false,
             "type": "file",
+            "title": "file_repo_1",
+            "enable": true,
             "file_path": "log.txt",
             "roll_period": "daily",
             "roll_size": "1048576",
             "formatter":
             {
-              "type": "text",
+              "type": "json",
               "delimiter": "|"
             }
           },
           {
-            "enable": false,
+            "enable": true,
+            "title": "console_repo_1",
             "type": "fluentd",
             "host": "localhost",
             "port": "8888",
@@ -206,7 +234,7 @@ the result will be:
           {
             "title": "test",
             "enable": true,
-            "severity_level": "info"
+            "severity_level": "WARN"
           }
         ]
       }
@@ -226,7 +254,7 @@ the result will be:
       multiple log manager configuration in Log_Managers array.
     - log_managers : the array of LogManagers with different configuration.
       It is possible to define multiple log manager configurations for differen usages.
-      - manager_name: the name of log manager. It will be used to define the default log manager.
+      - title: the name of log manager. It will be used to define the default log manager.
       - enable: (true/false) The value of this property activate or deactivate entire log manager.
       - app_name: Application name as the owner of log data.
       - severity_level: Defines which level of log data will be stored in log repositories.
@@ -296,8 +324,32 @@ the result will be:
 
     # enable or disable all topic if necessary
     log_manager.update_all_topics_enable([true/false])
+
+    # to get log manager configuration as json object use to_builder method
+    log_manager.to_builder
+    
+    # to get log manager configuration as json string use reveal_config method
+    log_manager.reveal_config
+    
+    # to apply some limited changes on log manager functionality at run time
+    # config_json parameter should carry a json object which contains the configuration
+    # structure described before in 'json configuration file structure' section.
+    # Attention: these changes will apply to manager but will not save. 
+    # So during next load these changes will be lost. Save changes will be available in
+    # next version.
+    # Attention: only following attributes could be change at run time:
+    # log_manager.enable
+    # log_manager.default_severity_level    
+    # log_manager.buffer_size (minimum is 100)
+    # log_manager.flush_wait_time (minimum 15 second)
+    # repository.enable
+    # topic.enable
+    # topic.severity_level
+    # Other attributes could only change via config file via manager config_use_json_file 
+    log_manager.apply_run_time_config(config_json) 
 ```
 ### Implement and Expand
+#### Implement new log repository
   It is possible to implement new log repositories. There will be fue rules to implement and
   integrate new customized log repository with RTALogger LogManager.
   
@@ -307,7 +359,7 @@ the result will be:
   
   3- Also appropriate naming convention is necessary. 
      As an example if you are implementing a Console Repo, your class name should be LogRepositoryConsole and 
-     your source code in a ruby file and name it log_repository_console.rb
+     your source code should be placed in a ruby file and name it log_repository_console.rb
   
   4- After implementing your own log repository, you should register the class at run-time using the following syntax:
   ```ruby

@@ -21,6 +21,10 @@ module RTALogger
     attr_reader :title
     attr_accessor :severity_level
 
+    def trace(context_id, *message)
+      add(context_id, TRACE, message) if @severity_level.to_i <= TRACE.to_i
+    end
+
     def debug(context_id, *message)
       add(context_id, DEBUG, message) if @severity_level.to_i <= DEBUG.to_i
     end
@@ -54,6 +58,13 @@ module RTALogger
 
       jb
     end
+
+    def appy_run_time_config(config_json)
+      return unless config_json
+      @enable = config_json['enable'] unless config_json['enable'].nil?
+      @severity_level = parse_severity_level_to_i(config_json['severity_level']) unless config_json['severity_level'].nil?
+    end
+
     private
 
     def add(context_id, severity, *message)

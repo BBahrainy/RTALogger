@@ -20,14 +20,13 @@ module RTALogger
 
     def initialize
       @enable = true
-      @name = 'default_log_manager'
+      @title = 'default_log_manager'
       @app_name = ENV.fetch('RTA_LOGGER_APP_NAME', 'unknown_app')
-      @severity_level = ENV.fetch('RTA_LOGGER_SEVERITY_LEVEL', WARN)
+      @severity_level = ENV.fetch('RTA_LOGGER_SEVERITY_LEVEL', INFO)
       @config_file_name = ''
       @topic_semaphore = Mutex.new
       @log_semaphore = Mutex.new
       self.buffer_size = ENV.fetch('RTA_LOGGER_BUFFER_SIZE', 100)
-      @flush_size = @buffer_size * 20 / 100
       self.flush_wait_time = ENV.fetch('RTA_LOGGER_FLUSH_WAIT_SECONDS', 15)
       @topics = {}
       @log_records = []
@@ -42,7 +41,7 @@ module RTALogger
       @flush_scheduler.run
     end
 
-    attr_reader :name
+    attr_reader :title
     attr_accessor :enable
     attr_accessor :app_name
     attr_reader :propagator
@@ -57,6 +56,7 @@ module RTALogger
 
     def buffer_size=(size)
       @buffer_size = size < 100 ? 100 : size
+      @flush_size = @buffer_size * 20 / 100
     end
 
     def flush_wait_time
@@ -67,8 +67,8 @@ module RTALogger
       @flush_wait_time = time_in_seconds < 10 ? 10 : time_in_seconds
     end
 
-    def config_use_json_file(file_name, manager_name = '')
-      config_json = load_config_from_json_file(file_name, manager_name)
+    def config_use_json_file(file_name, title = '')
+      config_json = load_config_from_json_file(file_name, title)
       @config_file_name = file_name if config_json
       apply_config(config_json)
     rescue StandardError => e
@@ -76,8 +76,8 @@ module RTALogger
       @propagator.add_log_repository(LogFactory.create_repository(:console))
     end
 
-    def config_use_json_string(config_string, manager_name = '')
-      config_json = load_config_from_json_string(config_string, manager_name)
+    def config_use_json_string(config_string,  title = '')
+      config_json = load_config_from_json_string(config_string, title)
       apply_config(config_json)
     rescue StandardError => e
       @propagator.drop_all_repositories
@@ -114,10 +114,22 @@ module RTALogger
       @topic_semaphore.synchronize { @topics.keys.each { |topic| @topics[topic].severity_level = severity_level } }
     end
 
+    def topic_by_title(title)
+      result = nil
+      @topic_semaphore.synchronize do
+        @topics.each do |topic|
+          result = topic if topic.title.casecmp(title).zero?
+          break if result
+        end
+      end
+
+      return result
+    end
+
     def to_builder
       @topic_semaphore.synchronize do
         jb = Jbuilder.new do |json|
-          json.name name
+          json.title title
           json.enable enable
           json.app_name app_name
           json.config_file_name config_file_name
@@ -141,33 +153,50 @@ module RTALogger
       to_builder.target!
     end
 
+    def apply_run_time_config(config_json)
+      return unless config_json
+      @enable = config_json['enable'] unless config_json['enable'].nil?
+      @default_severity_level = parse_severity_level_to_i(config_json['severity_level']) unless config_json['severity_level'].nil?
+      self.buffer_size = config_json['buffer_size'] unless config_json['buffer_size'].nil?
+      self.flush_wait_time = config_json['flush_wait_time'] unless config_json['flush_wait_time'].nil?
+      @propagator.apply_run_time_config(config_json)
+
+      if config_json['topics']
+        config_json['topics'].each do |topic_config|
+          next if topic_config['title'].nil?
+          topic = topic_by_title(topic_config['title'])
+          topic.apply_run_time_config(topic_config) if topic
+        end
+      end
+    end
+
     private
 
-    def load_config_from_json_file(config_file_name, manager_name = '')
+    def load_config_from_json_file(config_file_name, title = '')
       config_file = File.open config_file_name
       config_json = ::JSON.load(config_file)
-      config_json = extract_config(config_json, manager_name)
+      config_json = extract_config(config_json, title)
       config_json
     end
 
-    def load_config_from_json_string(config_string, manager_name = '')
+    def load_config_from_json_string(config_string, title = '')
       config_json = ::JSON.parse(config_string)
-      config_json = extract_config(config_json, manager_name)
+      config_json = extract_config(config_json, title)
       config_json
     end
 
-    def extract_config(json_data, manager_name = '')
+    def extract_config(json_data, title = '')
       config_json = json_data['rta_logger']
       raise 'RTALogger configuration not found!' unless config_json
       raise 'Log_Managers section does not exists json configuration' unless config_json['log_managers']
       raise 'No config manager defined in json configuration' unless config_json['log_managers'].count.positive?
-      manager_name = config_json['default_manager'] if manager_name.empty?
-      unless manager_name.to_s.strip.empty?
-        config_json = config_json['log_managers'].find { |item| item['manager_name'] == manager_name }
+      title = config_json['default_manager'] if title.empty?
+      unless title.to_s.strip.empty?
+        config_json = config_json['log_managers'].find { |item| item['title'] == title }
       end
       config_json ||= config_json['log_managers'][0]
       raise 'Unable to extract RTA Log Manager configuration!' unless config_json
-      @name = manager_name if config_json
+      @title = title if config_json
       config_json
     end
 

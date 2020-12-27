@@ -5,17 +5,18 @@
     "log_managers":
     [
       {
-        "manager_name": "develop",
+        "title": "develop",
         "enable": true,
         "app_name": "TestApp",
-        "severity_level": "debug",
+        "severity_level": "trace",
         "buffer_size": 100,
         "flush_wait_seconds": 10,
         "repositories":
         [
           {
-            "enable": true,
             "type": "console",
+            "title": "console_repo_1",
+            "enable": true,
             "formatter":
             {
               "type": "text",
@@ -23,8 +24,9 @@
             }
           },
           {
-            "enable": true,
             "type": "file",
+            "title": "file_repo_1",
+            "enable": true,
             "file_path": "log.txt",
             "roll_period": "daily",
             "roll_size": "1048576",
@@ -36,6 +38,7 @@
           },
           {
             "enable": true,
+            "title": "console_repo_1",
             "type": "fluentd",
             "host": "localhost",
             "port": "8888",

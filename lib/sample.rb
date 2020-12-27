@@ -28,6 +28,7 @@ test_topic = log_manager.add_topic('test')
 # test_topic.enable = false
 
 # add log information to log topic
+topic.trace(userID, 'Controller Name=', controller_name, 'trace')
 topic.debug(userID, 'Controller Name=', controller_name, 'debug')
 topic.info(userID, 'Controller Name=', controller_name, 'information')
 topic.warning(userID, 'Controller Name=', controller_name, 'warning')

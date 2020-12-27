@@ -6,6 +6,7 @@ module RTALogger
     def initialize
       @semaphore = Mutex.new
       @log_records = []
+      @title = self.class.to_s.split('::').last.underscore
       @enable = true
       @formatter = RTALogger::LogFactory.log_formatter_default
     end
@@ -25,6 +26,7 @@ module RTALogger
     #   @@sub_classes[repository_name] = self
     # end
 
+    attr_accessor :title
     attr_accessor :enable
     attr_accessor :formatter
 
@@ -38,7 +40,7 @@ module RTALogger
 
     def load_config(config_json)
       @enable = config_json['enable'].nil? ? true : config_json['enable']
-
+      @title = config_json['title'].nil? ? self.class.to_s.split('::').last.underscore : config_json['title']
       formatter_config = config_json['formatter']
       if formatter_config && formatter_config['type']
         @formatter = LogFactory.create_formatter(formatter_config['type'], formatter_config)
@@ -57,6 +59,11 @@ module RTALogger
 
     def reveal_config
       to_builder.target!
+    end
+
+    def appy_run_time_config(config_json)
+      return unless config_json
+      @enable = config_json['enable'] unless config_json['enable'].nil?
     end
 
     protected
