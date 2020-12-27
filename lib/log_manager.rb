@@ -117,8 +117,8 @@ module RTALogger
     def topic_by_title(title)
       result = nil
       @topic_semaphore.synchronize do
-        @topics.each do |topic|
-          result = topic if topic.title.casecmp(title).zero?
+        @topics.keys.each do |topic_key|
+          result = @topics[topic_key.to_sym] if topic_key.to_s.casecmp(title).zero?
           break if result
         end
       end

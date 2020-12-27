@@ -37,8 +37,8 @@ module RTALogger
     def repository_by_title(title)
       result = nil
       @semaphore.synchronize do
-        @repositories.each do |repository|
-          result = repository if repository.title.casecmp(title).zero?
+        @repositories.keys.each do |repository_key|
+          result = @repositories[repository_key.to_sym] if repository_key.to_s.casecmp(title).zero?
           break if result
         end
       end
