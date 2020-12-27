@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    RTALogger (2.0.1)
+    RTALogger (2.0.2)
       fluent-logger (~> 0.9)
       jbuilder (~> 2.10)
 

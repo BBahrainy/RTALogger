@@ -61,7 +61,7 @@ module RTALogger
       to_builder.target!
     end
 
-    def appy_run_time_config(config_json)
+    def apply_run_time_config(config_json)
       return unless config_json
       @enable = config_json['enable'] unless config_json['enable'].nil?
     end

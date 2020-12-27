@@ -59,7 +59,7 @@ module RTALogger
       jb
     end
 
-    def appy_run_time_config(config_json)
+    def apply_run_time_config(config_json)
       return unless config_json
       @enable = config_json['enable'] unless config_json['enable'].nil?
       @severity_level = parse_severity_level_to_i(config_json['severity_level']) unless config_json['severity_level'].nil?
