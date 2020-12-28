@@ -17,7 +17,7 @@ module RTALogger
     protected
 
     def flush_and_clear
-      semaphore.synchronize do
+      @semaphore.synchronize do
         @log_records.each { |log_record| puts @formatter.format(log_record) }
       end
       super

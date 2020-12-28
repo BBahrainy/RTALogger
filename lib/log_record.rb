@@ -16,6 +16,10 @@ module RTALogger
     attr_reader :message
     attr_reader :occurred_at
 
+    def full_message
+      message.join(' ')
+    end
+
     def app_name
       @log_topic.log_manager.app_name
     end
