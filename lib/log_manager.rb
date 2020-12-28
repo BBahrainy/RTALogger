@@ -76,7 +76,7 @@ module RTALogger
       @propagator.add_log_repository(LogFactory.create_repository(:console))
     end
 
-    def config_use_json_string(config_string,  title = '')
+    def config_use_json_string(config_string, title = '')
       config_json = load_config_from_json_string(config_string, title)
       apply_config(config_json)
     rescue StandardError => e
@@ -138,7 +138,8 @@ module RTALogger
           json.flush_size flush_size
           json.flush_wait_time flush_wait_time
           json.repositories do
-            json.array! @propagator.repositories.collect { |repository| repository.to_builder.attributes! }
+            # json.array! @propagator.repositories.collect { |repository| repository.to_builder.attributes! }
+            json.array! @propagator.to_builder
           end
           json.topics do
             json.array! topics.keys.collect { |topic_key| @topics[topic_key].to_builder.attributes! }
@@ -156,21 +157,22 @@ module RTALogger
     def apply_run_time_config(config_json)
       return unless config_json
       @enable = config_json['enable'] unless config_json['enable'].nil?
-      @default_severity_level = parse_severity_level_to_i(config_json['severity_level']) unless config_json['severity_level'].nil?
+      @default_severity_level = parse_severity_level_to_s(config_json['severity_level']) unless config_json['severity_level'].nil?
       self.buffer_size = config_json['buffer_size'] unless config_json['buffer_size'].nil?
       self.flush_wait_time = config_json['flush_wait_time'] unless config_json['flush_wait_time'].nil?
       @propagator.apply_run_time_config(config_json)
-
-      if config_json['topics']
-        config_json['topics'].each do |topic_config|
-          next if topic_config['title'].nil?
-          topic = topic_by_title(topic_config['title'])
-          topic.apply_run_time_config(topic_config) if topic
-        end
-      end
+      apply_run_time_config_topics(config_json)
     end
 
     private
+
+    def apply_run_time_config_topics(config_json)
+      config_json['topics']&.each do |topic_config|
+        next if topic_config['title'].nil?
+        topic = topic_by_title(topic_config['title'])
+        topic.apply_run_time_config(topic_config) if topic.present?
+      end
+    end
 
     def load_config_from_json_file(config_file_name, title = '')
       config_file = File.open config_file_name
@@ -207,13 +209,8 @@ module RTALogger
       @default_severity_level = parse_severity_level_to_i(config_json['severity_level']) if config_json['severity_level']
       self.buffer_size = config_json['buffer_size'] if config_json['buffer_size']
       self.flush_wait_time = config_json['flush_wait_seconds'] if config_json['flush_wait_seconds']
-      @propagator.drop_all_repositories
-      apply_config_repos(config_json)
+      @propagator.load_repositories(config_json)
       apply_config_topics(config_json)
-    end
-
-    def apply_config_repos(config_json)
-      config_json['repositories']&.each { |item| @propagator.load_log_repository(item) }
     end
 
     def apply_config_topics(config_json)

@@ -31,7 +31,12 @@ module RTALogger
 
       json
     end
+
     # register :file
+
+    def apply_run_time_config(config_json)
+      super config_json
+    end
 
     protected
 
@@ -45,7 +50,7 @@ module RTALogger
     end
 
     def flush_and_clear
-      semaphore.synchronize do
+      @semaphore.synchronize do
         @log_records.each { |log_record| @file_logger.debug(@formatter.format(log_record)) }
       end
       super

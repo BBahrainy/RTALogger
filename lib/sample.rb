@@ -39,7 +39,7 @@ topic.unknown(userID, 'Controller Name=', controller_name, 'unknown')
 test_topic.error(userID, 'test_topic', 'error')
 test_topic.fatal(userID, 'test_topic', 'fatal')
 
-puts log_manager.reveal_config
+# puts log_manager.reveal_config
 
 # update specific topic log level if necessary
 # log_manager.update_topic_level(controller_name, RTALogger::SeverityLevel::INFO)
