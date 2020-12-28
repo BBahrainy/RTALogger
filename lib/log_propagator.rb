@@ -92,7 +92,7 @@ module RTALogger
         if repository.present?
           repository.apply_run_time_config(repository_config)
         else
-          repository = ::RTALogger::LogFactory.create_repository(repository_config['type'], config_json)
+          repository = ::RTALogger::LogFactory.create_repository(repository_config['type'], repository_config)
           add_log_repository(repository)
         end
       end

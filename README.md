@@ -94,7 +94,7 @@ To use log manager APIs, first step is to have a quick review on Log Data Struct
         "app_name": "TestApp",
         "severity_level": "trace",
         "buffer_size": 100,
-        "flush_wait_seconds": 10,
+        "flush_wait_seconds": 5,
         "repositories":
         [
           {
@@ -206,7 +206,7 @@ the result will be:
         "app_name": "TestApp",
         "severity_level": "trace",
         "buffer_size": 100,
-        "flush_wait_seconds": 10,
+        "flush_wait_seconds": 5,
         "repositories":
         [
           {
@@ -291,7 +291,7 @@ the result will be:
       - buffer_size: Minimune possible value for this attribute is 100 and defines memory buffer size (number of buffered log objects) to 
         decread api consumers wait time. when the buffer is full the flush operation will
         save buffered logs to log repositoies.
-      - flush_wait_seconds: Minimum possible value for this attribure is 10 seconds and defines time in soconds which log managers wait to flush buffered log records
+      - flush_wait_seconds: Minimum possible value for this attribure is 5 seconds and defines time in soconds which log managers wait to flush buffered log records
         to log repository.
       - repositories: Array of log repositories. It is possible to define multiple log repositories to
         store log data. there are variaty of log repositories and it is possible to
@@ -387,7 +387,7 @@ the result will be:
     # log_manager.enable
     # log_manager.default_severity_level    
     # log_manager.buffer_size (minimum is 100)
-    # log_manager.flush_wait_time (minimum 15 second)
+    # log_manager.flush_wait_time (minimum 5 second)
     # repository.enable
     # topic.enable
     # topic.severity_level

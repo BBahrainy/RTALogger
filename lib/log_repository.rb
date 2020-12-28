@@ -47,9 +47,8 @@ module RTALogger
       @enable = config_json['enable'].nil? ? true : config_json['enable']
       @title = config_json['title'].nil? ? self.class.to_s.split('::').last.underscore : config_json['title']
       formatter_config = config_json['formatter']
-      if formatter_config && formatter_config['type']
-        @formatter = LogFactory.create_formatter(formatter_config['type'], formatter_config)
-      end
+
+      @formatter = LogFactory.create_formatter(formatter_config['type'], formatter_config) if formatter_config && formatter_config['type']
 
       apply_config_filters(config_json)
     end

@@ -27,7 +27,7 @@ module RTALogger
       @topic_semaphore = Mutex.new
       @log_semaphore = Mutex.new
       self.buffer_size = ENV.fetch('RTA_LOGGER_BUFFER_SIZE', 100)
-      self.flush_wait_time = ENV.fetch('RTA_LOGGER_FLUSH_WAIT_SECONDS', 15)
+      self.flush_wait_time = ENV.fetch('RTA_LOGGER_FLUSH_WAIT_SECONDS', 5)
       @topics = {}
       @log_records = []
       @propagator = LogFactory.new_log_propagator
@@ -64,7 +64,7 @@ module RTALogger
     end
 
     def flush_wait_time=(time_in_seconds)
-      @flush_wait_time = time_in_seconds < 10 ? 10 : time_in_seconds
+      @flush_wait_time = time_in_seconds < 5 ? 5 : time_in_seconds
     end
 
     def config_use_json_file(file_name, title = '')
