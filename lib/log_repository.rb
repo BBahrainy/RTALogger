@@ -57,6 +57,7 @@ module RTALogger
     def to_builder
       jb = Jbuilder.new do |json|
         json.type self.class.to_s.split('::').last.underscore.sub('log_repository_', '')
+        json.title @title
         json.enable enable
         json.formatter @formatter.to_builder.attributes!
         json.filters do
