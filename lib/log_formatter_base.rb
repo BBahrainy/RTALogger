@@ -15,6 +15,8 @@ module RTALogger
     attr_accessor :colorize
 
     def load_config(config_json)
+      return unless config_json.present?
+
       @delimiter = config_json['delimiter'].nil? ? true : config_json['delimiter']
       @colorize = config_json['colorize'].nil? ? false : config_json['colorize']
     end
@@ -38,6 +40,8 @@ module RTALogger
     end
 
     def apply_run_time_config(config_json)
+      return unless config_json.present?
+
       @delimiter = config_json['delimiter'] unless config_json['delimiter'].nil?
       @colorize = config_json['colorize'] unless config_json['colorize'].nil?
     end
@@ -65,7 +69,7 @@ module RTALogger
       when 5
         text.fatal_color
       when 6
-        text.unknown_colorj
+        text.unknown_color
       else
         text
       end

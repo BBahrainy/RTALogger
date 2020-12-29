@@ -21,7 +21,7 @@ module RTALogger
       return nil unless formatter_class
       result = formatter_class.new
 
-      return result if config_json.empty?
+      return result if config_json.nil? || config_json.empty?
       result.load_config(config_json) if result.present?
       return result
     end
