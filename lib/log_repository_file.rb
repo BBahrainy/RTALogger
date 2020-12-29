@@ -36,6 +36,8 @@ module RTALogger
 
     def apply_run_time_config(config_json)
       super config_json
+
+      @formatter.colorize = false
     end
 
     protected

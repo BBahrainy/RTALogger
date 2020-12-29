@@ -20,14 +20,15 @@
             "formatter":
             {
               "type": "text",
-              "delimiter": "|"
+              "delimiter": "|",
+              "colorize": true
             },
             "filters":
             [
               {
                 "type": "topic",
                 "title": "topic_filter_1",
-                "enable": true,
+                "enable": false,
                 "default_regex" : "^test$"
               },
               {

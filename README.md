@@ -104,7 +104,8 @@ To use log manager APIs, first step is to have a quick review on Log Data Struct
             "formatter":
             {
               "type": "text",
-              "delimiter": "|"
+              "delimiter": "|",
+              "colorize": true
             },
             "filters":
             [
@@ -216,7 +217,8 @@ the result will be:
             "formatter":
             {
               "type": "text",
-              "delimiter": "|"
+              "delimiter": "|",
+              "colorize": true
             },
             "filters":
             [
@@ -305,6 +307,8 @@ the result will be:
              - "foramtter" is the text, json or any custome defined types as LogRecord formatter
                 - "type": ["text"/"json"] type of formatter
                 - "delimiter": [any text delimiter you need.(as an instance pipe line "|")]
+                - "colorize": [true/false] default value of this attribute is false. 
+                   if you need to colorize your out put format on standard output set this attribute to true.
                 if formatter not defined then the json formatter will be used
           2- file: Store log data in a file.
              - "type": "console"
@@ -348,6 +352,7 @@ the result will be:
                "enable": [true/false] this will enable or disable filtering opration of current filter.
                "default_regex": "valid regual expression" to compare with corresponding attribute.
              * It's possible to implement customize filter classes and integerate with RTALogger filter factory. 
+             * In RTALogger version 2.2.0 colorize out put format is availabel.
         - topics: This is an optional item. When you need to customize a specific topic severity level or
                   enable value, you can define the settings here.
           - title: The topic title to customize. (mandatoy).

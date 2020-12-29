@@ -1,12 +1,11 @@
 require 'jbuilder'
 require_relative 'log_formatter_base'
-require_relative 'severity_level'
+require_relative 'string'
 
 module RTALogger
   # json formatter which receive log_record and
   # returns it's data as json string
   class LogFormatterJson < LogFormatterBase
-    include SeverityLevel
 
     def format(log_record)
       return '' unless log_record
@@ -20,7 +19,21 @@ module RTALogger
         json.message log_record.message.flatten.join(' ')
       end
 
-      jb.target!
+      result = jb.target!
+      result = colorize_json(result) if @colorize
+
+      return result
+    end
+
+    protected
+
+    def colorize_json(json_text)
+      json_text.gsub(/"severity":"TRACE"/i, '"severity":"TRACE"'.trace_color)
+               .gsub(/"severity":"DEBUG"/i, '"severity":"DEBUG"'.debug_color)
+               .gsub(/"severity":"WARN"/i, '"severity":"WARN"'.warning_color)
+               .gsub(/"severity":"ERROR"/i, '"severity":"ERROR"'.error_color)
+               .gsub(/"severity":"FATAL"/i, '"severity":"FATAL"'.fatal_color)
+               .gsub(/"severity":"UNKNOWN"/i, '"severity":"UNKNOWN"'.unknown_color)
     end
   end
 end

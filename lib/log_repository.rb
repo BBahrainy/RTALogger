@@ -86,6 +86,7 @@ module RTALogger
     def apply_run_time_config(config_json)
       return unless config_json
       @enable = config_json['enable'] unless config_json['enable'].nil?
+      @formatter.apply_run_time_config(config_json)
       apply_run_time_config_filters(config_json)
     end
 

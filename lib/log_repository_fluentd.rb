@@ -62,6 +62,8 @@ module RTALogger
       @port = config_json['port'] unless config_json['port'].nil?
       @tls_options = config_json['tls_options'] unless config_json['tls_options'].nil?
       @semaphore.synchronize { @fluent_logger = nil }
+
+      @formatter.colorize = false
     end
 
     protected

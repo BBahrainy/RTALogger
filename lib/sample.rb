@@ -1,5 +1,14 @@
 require_relative 'log_factory_manager'
 require_relative 'log_factory_repository'
+# require_relative 'string'
+
+# puts 'trace'.gray
+# puts 'debug'.green
+# puts 'info'
+# puts 'warning'.brown
+# puts 'error'.red
+# puts 'fatal'.bg_red
+# puts 'unknown'.bg_cyan
 
 controller_name = 'test_controller'
 userID = 5
