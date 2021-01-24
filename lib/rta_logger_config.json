@@ -27,12 +27,14 @@
             [
               {
                 "type": "topic",
+                "action" : "ignore",
                 "title": "topic_filter_1",
                 "enable": false,
-                "default_regex" : "^test$"
+                "default_regex" : "^test$",
               },
               {
                 "type": "message",
+                "action" : "accept",
                 "title": "message_filter_1",
                 "enable": false,
                 "default_regex" : "error"
@@ -53,9 +55,9 @@
             }
           },
           {
-            "enable": false,
             "title": "fluentd_repo_1",
             "type": "fluentd",
+            "enable": false,
             "host": "localhost",
             "port": "8888",
             "formatter":

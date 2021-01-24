@@ -71,6 +71,7 @@ module RTALogger
       config_json = load_config_from_json_file(file_name, title)
       @config_file_name = file_name if config_json
       apply_config(config_json)
+      self
     rescue StandardError => e
       @propagator.drop_all_repositories
       @propagator.add_log_repository(LogFactory.create_repository(:console))
@@ -79,6 +80,7 @@ module RTALogger
     def config_use_json_string(config_string, title = '')
       config_json = load_config_from_json_string(config_string, title)
       apply_config(config_json)
+      self
     rescue StandardError => e
       @propagator.drop_all_repositories
       @propagator.add_log_repository(LogFactory.create_repository(:console))

@@ -9,7 +9,7 @@ module RTALogger
       begin
         load lib_file
       rescue
-        raise "unable to load formatter class file: #{lib_file}"
+        raise "unable to load filter class file: #{lib_file}"
       end
 
       filter_class_name = 'RTALogger::' + ('log_filter_' + type.to_s).split('_').map(&:capitalize).join
