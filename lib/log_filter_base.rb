@@ -36,6 +36,7 @@ module RTALogger
         json.title @title
         json.enable @enable
         json.default_regex @default_regex
+        json.action @action.to_s
       end
 
       jb
