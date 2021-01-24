@@ -22,32 +22,46 @@ module RTALogger
     attr_accessor :severity_level
 
     def trace(context_id, *message)
-      add(context_id, TRACE, message) if @severity_level.to_i <= TRACE.to_i
+      add(context_id, TRACE, message) if trace?
     end
 
     def debug(context_id, *message)
-      add(context_id, DEBUG, message) if @severity_level.to_i <= DEBUG.to_i
+      add(context_id, DEBUG, message) if debug?
     end
 
     def info(context_id, *message)
-      add(context_id, INFO, message) if @severity_level.to_i <= INFO.to_i
+      add(context_id, INFO, message) if info?
     end
 
     def warning(context_id, *message)
-      add(context_id, WARN, message) if @severity_level.to_i <= WARN.to_i
+      add(context_id, WARN, message) if warn?
     end
 
     def error(context_id, *message)
-      add(context_id, ERROR, message) if @severity_level.to_i <= ERROR.to_i
+      add(context_id, ERROR, message) if error?
     end
 
     def fatal(context_id, *message)
-      add(context_id, FATAL, message) if @severity_level.to_i <= FATAL.to_i
+      add(context_id, FATAL, message) if fatal?
     end
 
     def unknown(context_id, *message)
-      add(context_id, UNKNOWN, message) if @severity_level.to_i <= UNKNOWN.to_i
+      add(context_id, UNKNOWN, message) if unknown?
     end
+
+    def trace?; @severity_level.to_i <= TRACE.to_i; end
+
+    def debug?; @severity_level.to_i <= DEBUG.to_i; end
+
+    def info?; @severity_level.to_i <= INFO.to_i; end
+
+    def warn?; @severity_level.to_i <= WARN.to_i; end
+
+    def error?; @severity_level.to_i <= ERROR.to_i; end
+
+    def fatal?; @severity_level.to_i <= FATAL.to_i; end
+
+    def unknown?; @severity_level.to_i <= UNKNOWN.to_i; end
 
     def to_builder
       jb = Jbuilder.new do |json|
